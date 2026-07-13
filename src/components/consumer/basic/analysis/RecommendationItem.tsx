@@ -1,3 +1,4 @@
+import SectionHeader from "@/common/header/SectionHeader";
 import React from "react";
 
 interface RecommendationItemProps {
@@ -13,12 +14,11 @@ const RecommendationItem: React.FC<RecommendationItemProps> = ({
 }) => {
   return (
     <div className="flex gap-3">
-      <span className="shrink-0 w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">
+      <span className="shrink-0 w-6 h-6 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center mt-0.5">
         {index}
       </span>
       <div>
-        <p className="font-bold text-foreground">{title}</p>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <SectionHeader size="md" title={title} description={description} />
       </div>
     </div>
   );

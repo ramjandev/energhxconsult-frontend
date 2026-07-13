@@ -1,3 +1,4 @@
+import SectionHeader from "@/common/header/SectionHeader";
 import { Upload } from "lucide-react";
 import React, { useRef, useState } from "react";
 
@@ -7,6 +8,7 @@ interface ImageDropzoneProps {
   label?: string;
   buttonLabel?: string;
   className?: string;
+  description?: string;
 }
 
 const ImageDropzone: React.FC<ImageDropzoneProps> = ({
@@ -15,6 +17,7 @@ const ImageDropzone: React.FC<ImageDropzoneProps> = ({
   label = "Drag and drop an image, or click to browse",
   buttonLabel = "Choose File",
   className,
+  description,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -48,6 +51,10 @@ const ImageDropzone: React.FC<ImageDropzoneProps> = ({
     >
       <Upload className="w-8 h-8 text-gray-400" />
 
+      <SectionHeader
+        size="lg"
+        title={description ?? "Upload Recent Utility Bills"}
+      />
       <p className="text-base text-gray-400">{label}</p>
 
       <button

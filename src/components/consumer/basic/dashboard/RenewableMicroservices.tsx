@@ -8,14 +8,14 @@ import SectionHeader from "@/common/header/SectionHeader";
 import { PiDropBold, PiLightningBold, PiWindBold } from "react-icons/pi";
 const RenewableMicroservices = () => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <SectionHeader
           title="Renewable Energy Microservices"
           description="After completing your audit, explore our specialized renewable energy solutions tailored to your building's needs"
         />
       </div>
-      <div className="grid grid-cols-3 gap-3 ">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 ">
         <FeatureCard
           icon={<PiLightningBold className="w-full h-full" />}
           iconBgClassName="bg-[#F59E0B]/10"
@@ -38,7 +38,7 @@ const RenewableMicroservices = () => {
           description="Explore biomass energy solutions for sustainable waste-to-energy conversion"
         />
       </div>
-      <CommonBorderWrapper className="border-2! border-[#DBEAFE]! space-y-6 bg-[#EFF6FF]! flex flex-col items-center justify-center ">
+      <CommonBorderWrapper isShadow>
         <CommonHeader
           size="sm"
           className="text-[#1C398E]! font-semibold! flex items-center gap-1"

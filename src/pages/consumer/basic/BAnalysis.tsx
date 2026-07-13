@@ -6,12 +6,10 @@ import { useEffect, useState } from "react";
 
 const BAnalysis = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isReportOpen, setIsReportOpen] = useState(false);
+  const [hasStartedAudit, setHasStartedAudit] = useState(false);
 
-  // Automatically open the modal whenever this tab mounts
   useEffect(() => {
     setIsModalOpen(true);
-    setIsReportOpen(true);
   }, []);
 
   const buildings = [
@@ -24,13 +22,16 @@ const BAnalysis = () => {
     auditType: "basic" | "comprehensive";
   }) => {
     console.log("Starting audit:", data);
+
+    // TODO: Call API / Navigate
+
+    setHasStartedAudit(true);
     setIsModalOpen(false);
-    // TODO: kick off audit flow / navigation here
   };
 
   return (
     <div>
-      {!isReportOpen && (
+      {!hasStartedAudit && (
         <div className="flex items-center justify-between mb-6">
           <SectionHeader title="Energy Analysis" />
           <CommonButton onClick={() => setIsModalOpen(true)}>
@@ -45,7 +46,8 @@ const BAnalysis = () => {
         buildings={buildings}
         onStart={handleStart}
       />
-      {!isModalOpen && isReportOpen && <EnergyAnalysisReport />}
+
+      {hasStartedAudit && <EnergyAnalysisReport />}
     </div>
   );
 };

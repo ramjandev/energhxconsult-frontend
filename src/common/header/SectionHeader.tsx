@@ -5,6 +5,7 @@ interface SectionHeaderProps {
   description?: string;
   className?: string;
   size?: "md" | "lg" | "xl" | "2xl";
+  direction?: "col" | "col-reverse";
 }
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({
@@ -12,12 +13,17 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   description,
   className,
   size = "2xl",
+  direction = "col",
 }) => {
   return (
-    <div className={className}>
+    <div
+      className={`flex ${
+        direction === "col" ? "flex-col" : "flex-col-reverse"
+      } ${className ?? ""}`}
+    >
       <CommonHeader
         size={size}
-        className={`font-bold! text-[#112518]! ${className} ${size === "2xl" ? "mb-2" : ""}`}
+        className={`font-bold! text-[#112518]! ${className} ${size === "2xl" ? " md:mb-1" : ""}`}
       >
         {title}
       </CommonHeader>

@@ -139,9 +139,13 @@ const CreateBuilding = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="flex items-center justify-between ">
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-3 ">
         <SectionHeader title="Building information" />
-        <CommonButton variant="destructive" to="/basic-consumer/building">
+        <CommonButton
+          variant="destructive"
+          to="/basic-consumer/building"
+          className="w-full sm:w-auto"
+        >
           Cancel
         </CommonButton>
       </div>
@@ -501,6 +505,7 @@ const CreateBuilding = () => {
           type="button"
           variant="secondary"
           onClick={() => append(emptyCommodity)}
+          className="w-full sm:w-auto"
         >
           Add Commodity
         </CommonButton>
@@ -508,10 +513,13 @@ const CreateBuilding = () => {
           type="button"
           variant="destructive"
           onClick={() => fields.length > 1 && remove(fields.length - 1)}
+          className="w-full sm:w-auto"
         >
           Remove Commodity
         </CommonButton>
-        <CommonButton type="submit">Create Building</CommonButton>
+        <CommonButton type="submit" className="w-full sm:w-auto">
+          Create Building
+        </CommonButton>
       </div>
     </form>
   );

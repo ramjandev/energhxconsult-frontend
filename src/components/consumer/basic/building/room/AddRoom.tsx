@@ -1,3 +1,4 @@
+import BackButton from "@/common/button/BackButton";
 import CommonButton from "@/common/button/CommonButton";
 import CommonSelect from "@/common/button/CommonSelect";
 import SectionHeader from "@/common/header/SectionHeader";
@@ -6,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { LuPackage } from "react-icons/lu";
 import { z } from "zod";
-
+import IconSectionHeader from "../../renewable/IconSectionHeader";
 const WALL_TYPES = [
   { label: "Brick", value: "brick" },
   { label: "Concrete", value: "concrete" },
@@ -160,19 +161,17 @@ const AddRoom = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="bg-green-100 p-2 rounded-lg">
-          <LuPackage className="text-green-600" size={24} />
-        </div>
+      <BackButton to="../" />
+      <IconSectionHeader
+        icon={LuPackage}
+        title="Add Room to Building"
+        description="Then add appliances, electrical devices, and HVAC systems."
+        iconBgClassName="bg-[#FFEDD4]"
+        iconClassName="text-[#F54900]"
+      />
 
-        <h1 className="text-xl font-bold text-green-600 uppercase tracking-wide">
-          Add Room to Building
-        </h1>
-      </div>
-
-      {/* Basic Info */}
-      <div>
-        <SectionHeader title="Room Information" />
+      <div className="space-y-2">
+        <SectionHeader size="xl" title="Room Information" />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div>
             <input
@@ -214,9 +213,8 @@ const AddRoom = () => {
         </div>
       </div>
 
-      {/* Walls */}
-      <div>
-        <SectionHeader title="Walls" />
+      <div className="space-y-2">
+        <SectionHeader size="xl" title="Walls" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
           <div>
             <Controller
@@ -286,8 +284,8 @@ const AddRoom = () => {
       </div>
 
       {/* Roof */}
-      <div>
-        <SectionHeader title="Roof" />
+      <div className="space-y-2">
+        <SectionHeader size="xl" title="Roof" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <Controller
@@ -322,8 +320,8 @@ const AddRoom = () => {
       </div>
 
       {/* Fenestration */}
-      <div>
-        <SectionHeader title="Fenestration" />
+      <div className="space-y-2">
+        <SectionHeader size="xl" title="Fenestration" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <input
@@ -523,8 +521,8 @@ const AddRoom = () => {
       </div>
 
       {/* Lighting */}
-      <div>
-        <SectionHeader title="Lighting" />
+      <div className="space-y-2">
+        <SectionHeader size="xl" title="Lighting" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-1">
           <div>
             <Controller
@@ -565,8 +563,8 @@ const AddRoom = () => {
       </div>
 
       {/* People */}
-      <div>
-        <SectionHeader title="People" />
+      <div className="space-y-2">
+        <SectionHeader size="xl" title="People" />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div>
             <input
@@ -623,8 +621,8 @@ const AddRoom = () => {
       </div>
 
       {/* Infiltration */}
-      <div>
-        <SectionHeader title="Infiltration" />
+      <div className="space-y-2">
+        <SectionHeader size="xl" title="Infiltration" />
         <div className="max-w-xs">
           <input
             type="text"

@@ -1,4 +1,5 @@
 import ActionButton from "@/common/button/ActionButton";
+import BackButton from "@/common/button/BackButton";
 import CommonBorderWrapper from "@/common/button/CommonBorderWrapper";
 import CommonButton from "@/common/button/CommonButton";
 import CommonHeader from "@/common/header/CommonHeader";
@@ -48,7 +49,8 @@ const BuildingDetails = () => {
   };
 
   return (
-    <div className=" space-y-4">
+    <div className=" space-y-6">
+      <BackButton />
       <CommonBorderWrapper isShadow>
         <div className="flex items-start justify-between">
           <div>
@@ -61,7 +63,7 @@ const BuildingDetails = () => {
             <ActionButton type="edit" />
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-3 ">
+        <div className="grid grid-col sm:grid-cols-2 md:grid-cols-4 gap-3 ">
           {[
             { label: "Total Rooms", value: "8" },
             { label: "Appliances", value: "41" },
@@ -71,7 +73,7 @@ const BuildingDetails = () => {
             <BMiniCard key={s.label} label={s.label} value={s.value} />
           ))}
         </div>
-        <div className="flex justify-between gap-2 mt-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-2 ">
           <CommonButton to="../add-room" showDefaultIcon>
             Add Room
           </CommonButton>
@@ -82,7 +84,7 @@ const BuildingDetails = () => {
         </div>
       </CommonBorderWrapper>
 
-      <div>
+      <div className="space-y-2">
         <SectionHeader title="Rooms" />
         <div className="space-y-4">
           {DEMO_ROOMS.map((room) => (

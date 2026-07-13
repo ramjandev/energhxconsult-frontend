@@ -44,10 +44,10 @@ const BBiomassEnergy = () => {
         panelCapacity=""
         onPanelCapacityChange={() => {}}
       />
-      <div className="rounded-[14px] border-2 border-[#E9D4FF] bg-gradient-to-br from-[#FAF5FF] to-white p-6">
-        <SectionHeader title="Biomass Energy Potential" />
+      <div className="rounded-[14px] border-2 border-[#E9D4FF] bg-gradient-to-br from-[#FAF5FF] to-white p-6 space-y-6">
+        <SectionHeader size="xl" title="Biomass Energy Potential" />
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+        <div className="grid  grid-cols-2 xl:grid-cols-4 gap-6">
           <StatBlock
             icon={Leaf}
             iconBg="bg-[#FFEDD4]"
@@ -157,7 +157,7 @@ const BBiomassEnergy = () => {
       </div>
 
       <CommonBorderWrapper className="space-y-4">
-        <SectionHeader size="lg" title="Feedstock Availability" />
+        <SectionHeader size="xl" title="Feedstock Availability" />
         <div className="space-y-4">
           <ProgressStat
             label="Local Availability"
@@ -179,9 +179,8 @@ const BBiomassEnergy = () => {
         </div>
       </CommonBorderWrapper>
       <CommonBorderWrapper isShadow>
-        <h2 className="text-lg font-bold text-foreground mb-4">
-          Key System Features
-        </h2>
+        <SectionHeader size="xl" title="Key System Features" />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FeatureCard
             isRow
@@ -220,7 +219,7 @@ const BBiomassEnergy = () => {
 
       <CommonBorderWrapper isShadow>
         <SectionHeader
-          size="lg"
+          size="xl"
           title="Are you interested in biomass energy?"
         />
 

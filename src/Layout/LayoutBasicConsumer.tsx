@@ -73,7 +73,7 @@ const LayoutBasicConsumer = () => {
   const { user } = useSelector((state: RootState) => state.auth);
 
   const [devUser] = useState({
-    name: `${user?.data.firstname ?? ""} ${user?.data.lastname ?? ""}`.trim(),
+    name: `${user?.data?.firstname ?? ""} ${user?.data?.lastname ?? ""}`.trim(),
     role: user?.data?.userType ?? "",
     profileImg: user?.data?.profile_photo ?? userImg,
   });
@@ -98,8 +98,7 @@ const LayoutBasicConsumer = () => {
           <div className={`${pathname === "/user/signup" && "hidden"}`}>
             <Sidebar menuItems={basicConsumerMenu} />
           </div>
-
-          <div className="flex-1 border-t border-t-[#E7E9E8] py-6 pl-6 ">
+          <div className="flex-1 border-t border-t-[#E7E9E8]  py-3 pl-3 pr-3 sm:py-6 sm:pl-6 sm:pr-6 2xl:pr-0 ">
             <Outlet />
           </div>
         </div>

@@ -1,7 +1,8 @@
 import CommonBorderWrapper from "@/common/button/CommonBorderWrapper";
 import CommonButton from "@/common/button/CommonButton";
 
-import { BarChart3, DollarSign, Leaf, TrendingUp, Zap } from "lucide-react";
+import SectionHeader from "@/common/header/SectionHeader";
+import { DollarSign, Leaf, TrendingUp } from "lucide-react";
 import React from "react";
 import {
   Bar,
@@ -18,7 +19,7 @@ import {
 } from "recharts";
 import BMiniCard from "../building/card/BMiniCard";
 import HeaderBanner from "../building/HeaderBanner";
-import StatBlock from "../renewable/StatBlock";
+import BarTooltip from "../building/management/BarTooltip";
 import InsightStat from "./InsightStat";
 import RecommendationItem from "./RecommendationItem";
 
@@ -53,51 +54,6 @@ const recommendations = [
   },
 ];
 
-function BarTooltip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-md">
-      <div className="font-medium text-slate-700">{label}</div>
-      <div className="text-slate-500">{payload[0].value} kWh</div>
-    </div>
-  );
-}
-
-const summaryCards = [
-  {
-    icon: Zap,
-    iconColorClassName: "text-[#2DAD00]",
-    iconBgClassName: "bg-[#2DAD00]/10",
-    label: "Total Appliances",
-    value: 19,
-    des: "Across 4 rooms",
-  },
-  {
-    icon: TrendingUp,
-    iconColorClassName: "text-[#D08700]",
-    iconBgClassName: "bg-[#FEF9C2]",
-    label: "Daily Usage",
-    value: "27.32 kWh",
-    des: "kWh per day",
-  },
-  {
-    icon: BarChart3,
-    iconColorClassName: "text-[#155DFC]",
-    iconBgClassName: "bg-[#DBEAFE]",
-    label: "Monthly Usage",
-    value: "820",
-    des: "kWh",
-  },
-  {
-    icon: DollarSign,
-    iconColorClassName: "text-[#00A63E]",
-    iconBgClassName: "bg-[#DCFCE7]",
-    label: "Monthly Cost",
-    value: "$122.94",
-    valueClass: "text-emerald-600",
-    des: "at $0.15/kWh",
-  },
-];
 const analysisCards = [
   {
     icon: TrendingUp,
@@ -136,30 +92,11 @@ const analysisCards = [
 const EnergyAnalysisReport: React.FC = () => {
   return (
     <div className="space-y-6">
-      {/* Header */}
-
       <HeaderBanner
         title="Energy Analysis Report"
         description="Comprehensive insights for your building's energy performance"
       />
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {summaryCards.map((card, index) => (
-          <BMiniCard
-            key={index}
-            className="border-[#E7E9E8]! bg-white! shadow-[0_1px_3px_0_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.10)]"
-            icon={card.icon}
-            iconColorClassName={card.iconColorClassName}
-            iconBgClassName={card.iconBgClassName}
-            label={card.label}
-            value={card.value}
-            valueClass={card.valueClass}
-            des={card.des}
-          />
-        ))}
-      </div>
-      {/* Analysis Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {analysisCards.map((card, index) => (
           <BMiniCard
             key={index}
@@ -174,52 +111,9 @@ const EnergyAnalysisReport: React.FC = () => {
           />
         ))}
       </div>
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatBlock
-          icon={TrendingUp}
-          iconBg="bg-green-100"
-          iconColor="text-green-600"
-          label="Energy Score"
-          value="85/100"
-          valueClass="text-foreground"
-          sub="Excellent Performance"
-          className="items-start text-left"
-        />
-        <StatBlock
-          icon={Leaf}
-          iconBg="bg-green-100"
-          iconColor="text-green-600"
-          label="Renewable %"
-          value="80%"
-          sub="Above Target"
-          className="items-start text-left"
-        />
-        <StatBlock
-          icon={DollarSign}
-          iconBg="bg-amber-100"
-          iconColor="text-amber-600"
-          label="Annual Savings"
-          value="$3,250"
-          sub="vs. Grid Only"
-          className="items-start text-left"
-        />
-        <StatBlock
-          icon={Leaf}
-          iconBg="bg-green-100"
-          iconColor="text-green-600"
-          label="CO2 Avoided"
-          value="13.6"
-          sub="tons/year"
-          className="items-start text-left"
-        />
-      </div>
 
-      {/* Energy Generation & Usage */}
       <CommonBorderWrapper isShadow>
-        <h2 className="text-lg font-bold text-foreground mb-4">
-          Energy Generation &amp; Usage
-        </h2>
+        <SectionHeader size="xl" title="Energy Generation &amp; Usage" />
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={usageData}>
@@ -256,9 +150,8 @@ const EnergyAnalysisReport: React.FC = () => {
       {/* Distribution + Recommendations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CommonBorderWrapper isShadow>
-          <h2 className="text-lg font-bold text-foreground mb-4">
-            Energy Source Distribution
-          </h2>
+          <SectionHeader size="xl" title="Energy Source Distribution" />
+
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -282,9 +175,8 @@ const EnergyAnalysisReport: React.FC = () => {
         </CommonBorderWrapper>
 
         <CommonBorderWrapper isShadow>
-          <h2 className="text-lg font-bold text-foreground mb-4">
-            Recommendations
-          </h2>
+          <SectionHeader size="xl" title="Recommendations" />
+
           <div className="space-y-5">
             {recommendations.map((rec, index) => (
               <RecommendationItem
@@ -300,9 +192,7 @@ const EnergyAnalysisReport: React.FC = () => {
 
       {/* Building Insights */}
       <CommonBorderWrapper isShadow>
-        <h2 className="text-lg font-bold text-foreground mb-4">
-          Building Insights
-        </h2>
+        <SectionHeader size="xl" title="Building Insights" />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <InsightStat label="Total Appliances" value="41" />
           <InsightStat label="Peak Usage Time" value="6-9 PM" />
@@ -315,21 +205,15 @@ const EnergyAnalysisReport: React.FC = () => {
       </CommonBorderWrapper>
 
       {/* Upgrade CTA */}
-      <div
-        className="rounded-2xl p-6"
-        style={{
-          border: "1px solid rgba(45, 173, 0, 0.2)",
-          background:
-            "linear-gradient(90deg, rgba(45, 173, 0, 0.1) 0%, #EAF7E6 100%)",
-        }}
-      >
-        <h2 className="text-lg font-bold text-foreground mb-2">
-          Upgrade to Standard Plan
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4 max-w-2xl">
-          Get access to advanced engineering modules, thermal comfort
-          simulation, and professional contract services.
-        </p>
+      <div className="rounded-2xl p-6 bg-primary/5 border border-primary/20 ">
+        <SectionHeader
+          size="md"
+          title="Upgrade to Standard Plan"
+          description=" Get access to advanced engineering modules, thermal comfort
+          simulation, and professional contract services."
+          className="mb-2"
+        />
+
         <CommonButton>Upgrade Now</CommonButton>
       </div>
     </div>

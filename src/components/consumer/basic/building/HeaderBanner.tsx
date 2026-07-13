@@ -18,7 +18,7 @@ const HeaderBanner: React.FC<HeaderBannerProps> = ({
 }) => {
   return (
     <div
-      className={`rounded-xl border border-[#2DAD0033] bg-gradient-to-r from-[#2DAD001A] to-[#EAF7E6] flex items-center justify-between p-8 ${className} `}
+      className={`rounded-xl border border-[#2DAD0033] bg-gradient-to-r from-[#2DAD001A] to-[#EAF7E6] flex flex-col md:flex-row md:items-center justify-between gap-3 p-6 md:p-8 ${className} `}
     >
       <div>
         <CommonHeader size="4xl" className="mb-2">

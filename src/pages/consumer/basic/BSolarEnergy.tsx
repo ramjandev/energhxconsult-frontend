@@ -37,9 +37,9 @@ const BSolarEnergy = () => {
         iconClassName="text-[#F54900]"
       />
 
-      <div className="rounded-[14px] border-2 border-[#FFD6A8] bg-gradient-to-br from-[#FFF7ED] to-white-2xl p-6">
-        <SectionHeader title="Solar Analysis Results" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+      <div className="rounded-[14px] border-2 border-[#FFD6A8] bg-gradient-to-br from-[#FFF7ED] to-white-2xl p-6 space-y-6">
+        <SectionHeader size="xl" title="Solar Analysis Results" />
+        <div className="grid  grid-cols-2 xl:grid-cols-4 gap-6">
           <StatBlock
             icon={Sun}
             iconBg="bg-[#FFEDD4]"

@@ -1,5 +1,21 @@
+import BiomassSystemDesign from "@/components/consumer/standard/commodity/biomass/BiomassSystemDesign";
+import { useState } from "react";
+
 const BiomassEnergy = () => {
-  return <div>BiomassEnergy</div>;
+  const [isUtilityConnected, setIsUtilityConnected] = useState(false);
+
+  return (
+    <div>
+      <BiomassSystemDesign
+        isUtilityConnected={isUtilityConnected}
+        onRequestPermission={() => setIsUtilityConnected(true)}
+        onBackToWindSizing={() => console.log("Back to wind sizing")}
+        onGenerateDesign={(items, parameters) =>
+          console.log("Generated biomass design:", { items, parameters })
+        }
+      />
+    </div>
+  );
 };
 
 export default BiomassEnergy;

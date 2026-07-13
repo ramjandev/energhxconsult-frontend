@@ -4,7 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const BASE_STYLE =
-  "inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
+  "inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer w-full sm:w-auto";
 
 const SHAPE_STYLE = {
   pill: "rounded-full",
@@ -20,9 +20,10 @@ const SIZE_STYLE = {
 
 const VARIANT_STYLE = {
   primary:
-    "bg-primary-green text-white hover:opacity-90 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.10),0_4px_6px_-4px_rgba(0,0,0,0.10)]",
-  outline:
-    "bg-white text-primary-green border-2 border-primary-green hover:bg-green-50",
+    "bg-primary-green text-white hover:opacity-90 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.10),0_4px_6px_-4px_rgba(0,0,0,0.10)] disabled:shadow-none disabled:cursor-not-allowed disabled:opacity-50",
+  primaryBlue: "bg-[#155DFC] text-white hover:opacity-90 ",
+  outline: "text-primary-green border-2 border-primary-green hover:bg-green-50",
+  outlineBlue: "text-[#155DFC] border-2 border-[#155DFC] hover:bg-[#155DFC]/10",
   destructive: "bg-red-500 text-white shadow-sm hover:opacity-90",
   secondary: "bg-[#6A7282] text-white hover:bg-[#6A7282]/90",
   ghost: "text-primary-green hover:bg-primary-green hover:text-white",

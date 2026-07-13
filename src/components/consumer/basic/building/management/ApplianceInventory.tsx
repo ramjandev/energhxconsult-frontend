@@ -192,7 +192,7 @@ const ApplianceInventory = () => {
   }, [activeFilter, search]);
   return (
     <CommonBorderWrapper isShadow className="">
-      <div className=" flex items-center justify-between">
+      <div className=" flex flex-col sm:flex-row items-center justify-between">
         <SectionHeader title="Appliance Inventory" />
 
         <CommonButton
@@ -227,8 +227,11 @@ const ApplianceInventory = () => {
           </p>
         )}
         {filteredRooms.map((room) => (
-          <div key={room.id} className="bg-[#EAF7E6]/30 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
+          <div
+            key={room.id}
+            className="bg-[#EAF7E6]/30 border border-[#E7E9E8] rounded-xl p-5"
+          >
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-3">
               <div>
                 <SectionHeader
                   size="xl"
@@ -236,9 +239,7 @@ const ApplianceInventory = () => {
                   description={`${room.name} • ${room.appliances.length} appliances`}
                 />
               </div>
-              <CommonButton variant="ghost" showDefaultIcon>
-                Add Appliances
-              </CommonButton>
+              <CommonButton showDefaultIcon>Add Appliances</CommonButton>
             </div>
             <div className="grid sm:grid-cols-2 gap-3">
               {room.appliances.map((a) => (

@@ -1,4 +1,3 @@
-import { TbasicConsumer } from "@/components/basic-consumer/ValidationSchema";
 import {
   Select,
   SelectContent,
@@ -19,6 +18,7 @@ import {
   useGetAllCountriesQuery,
   useLazyGetAllStatesQuery,
 } from "@/store/LMS/user/userApi";
+import { TbasicConsumer } from "../password/ValidationSchema";
 
 interface CommonPersonalInfoProps {
   register: UseFormRegister<TbasicConsumer>;

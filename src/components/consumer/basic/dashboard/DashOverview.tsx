@@ -10,13 +10,13 @@ import { TbAlertCircle } from "react-icons/tb";
 
 const DashOverview = () => {
   return (
-    <CommonBorderWrapper className="border-2! border-[#F3F4F6]! space-y-8 bg-[linear-gradient(135deg,_#FFF_0%,_#F9FAFB_100%)]!">
+    <CommonBorderWrapper isShadow className="">
       <SectionHeader
         title="Audit Microservice Overview"
         description="Our comprehensive audit system analyzes your building's energy performance and provides actionable insights for optimization."
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 ">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 ">
         <FeatureCard
           icon={<LuFileSearch className="w-full h-full" />}
           iconBgClassName="bg-primary-green/12"

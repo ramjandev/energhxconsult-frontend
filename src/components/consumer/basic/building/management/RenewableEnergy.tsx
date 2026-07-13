@@ -14,8 +14,10 @@ const RenewableEnergy = () => {
       />
 
       <div className="flex flex-wrap gap-3">
-        <CommonButton className="">View Solar Analysis</CommonButton>
-        <CommonButton variant="outline" className="">
+        <CommonButton className="" to="../../solar-energy">
+          View Solar Analysis
+        </CommonButton>
+        <CommonButton variant="outline" className="" to="../../analysis">
           View Full Energy Report
         </CommonButton>
       </div>

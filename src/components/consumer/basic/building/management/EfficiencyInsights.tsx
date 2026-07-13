@@ -5,7 +5,7 @@ import SectionHeader from "@/common/header/SectionHeader";
 const EfficiencyInsights = () => {
   return (
     <CommonBorderWrapper isShadow className="">
-      <SectionHeader title="Energy Efficiency Insights" />
+      <SectionHeader size="xl" title="Energy Efficiency Insights" />
       <div className="grid md:grid-cols-3 gap-4">
         <div className="rounded-xl bg-amber-50 border border-amber-100 p-4">
           <div className="space-y-3">

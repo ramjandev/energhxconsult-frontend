@@ -1,14 +1,18 @@
 import LayoutStandardConsumer from "@/Layout/LayoutStandardConsumer";
 import AssignedAssociates from "@/pages/consumer/basic/AssignedAssociates";
-import BatteryStorageDesign from "@/pages/consumer/standard/BatteryStorageDesign";
+import Settings from "@/pages/consumer/basic/Settings";
+import AddEngineeringServices from "@/pages/consumer/standard/AddEngineeringServices";
+import BatteryStorage from "@/pages/consumer/standard/BatteryStorage";
 import BiomassEnergy from "@/pages/consumer/standard/BiomassEnergy";
-import BuildingHVACModelling from "@/pages/consumer/standard/BuildingHVACModelling";
 import CheckoutReport from "@/pages/consumer/standard/CheckoutReport";
+import CommodityContract from "@/pages/consumer/standard/CommodityContract";
+import CommoditySetup from "@/pages/consumer/standard/CommoditySetup";
+import ContractDocuments from "@/pages/consumer/standard/ContractDocuments";
+import ContractProcess from "@/pages/consumer/standard/ContractProcess";
 import EngineeringReviewApproval from "@/pages/consumer/standard/EngineeringReviewApproval";
-import EngineeringServices from "@/pages/consumer/standard/EngineeringServices";
-import EVChargingInfrastructure from "@/pages/consumer/standard/EVChargingInfrastructure";
+import EvCharging from "@/pages/consumer/standard/EvCharging";
+import HvacModelling from "@/pages/consumer/standard/HvacModelling";
 import NetZeroEnergyBuilding from "@/pages/consumer/standard/NetZeroEnergyBuilding";
-import ProfileSettings from "@/pages/consumer/standard/ProfileSettings";
 import ResSequenceValidation from "@/pages/consumer/standard/ResSequenceValidation";
 import SDashboard from "@/pages/consumer/standard/SDashboard";
 import SolarEnergy from "@/pages/consumer/standard/SolarEnergy";
@@ -24,19 +28,20 @@ const standardConsumerRoutes = {
     { path: "dashboard", element: <SDashboard /> },
 
     // Energy Commodity Setup
+    { path: "energy-commodity-setup", element: <CommoditySetup /> },
     { path: "zev", element: <ZeroEmissionVehicle /> },
     { path: "nzeb", element: <NetZeroEnergyBuilding /> },
     {
       path: "thermal-comfort-simulation",
       element: <ThermalComfortSimulation />,
     },
-    { path: "engineering-services", element: <EngineeringServices /> },
+    { path: "engineering-services", element: <AddEngineeringServices /> },
     { path: "solar-energy", element: <SolarEnergy /> },
     { path: "wind-energy", element: <WindEnergy /> },
     { path: "biomass-energy", element: <BiomassEnergy /> },
-    { path: "hvac-modelling", element: <BuildingHVACModelling /> },
-    { path: "battery-storage", element: <BatteryStorageDesign /> },
-    { path: "ev-charging", element: <EVChargingInfrastructure /> },
+    { path: "hvac-modelling", element: <HvacModelling /> },
+    { path: "battery-storage", element: <BatteryStorage /> },
+    { path: "ev-charging", element: <EvCharging /> },
 
     // Validation & Approval
     { path: "res-sequence-validation", element: <ResSequenceValidation /> },
@@ -44,10 +49,20 @@ const standardConsumerRoutes = {
 
     // Contracts & Reports
     { path: "project-proposal", element: <ProjectProposalContract /> },
+    { path: "contract-documents", element: <ContractDocuments /> },
+    {
+      path: "contract-process",
+      element: <ContractProcess />,
+    },
+    {
+      path: "commodity-contract",
+      element: <CommodityContract />,
+    },
+
     { path: "checkout-report", element: <CheckoutReport /> },
 
     // Settings
-    { path: "profile-settings", element: <ProfileSettings /> },
+    { path: "profile-settings", element: <Settings /> },
     { path: "assigned-associates", element: <AssignedAssociates /> },
   ],
 };

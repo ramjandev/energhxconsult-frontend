@@ -42,11 +42,8 @@ const BuildingCard: React.FC<BuildingCardProps> = ({ building }) => {
     },
   ];
   return (
-    <CommonBorderWrapper
-      className="border-[#E7E9E8]! shadow-[0_1px_3px_0_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.10)] space-y-4
-    "
-    >
-      <div className="flex items-start justify-between">
+    <CommonBorderWrapper isShadow>
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
         <div>
           <CommonHeader size="xl">{building.name}</CommonHeader>
           <CommonHeader size="sm">
@@ -59,12 +56,13 @@ const BuildingCard: React.FC<BuildingCardProps> = ({ building }) => {
           variant="outline"
           shape="rounded"
           to={`./building-details/${building.id}`}
+          className="w-full sm:w-auto"
         >
           View Details
         </CommonButton>
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-col-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
         {stats.map((stat) => (
           <BMiniCard key={stat.label} {...stat} />
         ))}
@@ -77,15 +75,28 @@ const BuildingCard: React.FC<BuildingCardProps> = ({ building }) => {
       )}
 
       <div className="flex flex-wrap gap-2">
-        <CommonButton to="./add-room" showDefaultIcon>
+        <CommonButton
+          to="./add-room"
+          showDefaultIcon
+          className="w-full sm:w-auto"
+        >
           Add Room
         </CommonButton>
 
-        <CommonButton variant="outline" to="./add-appliance" showDefaultIcon>
+        <CommonButton
+          variant="outline"
+          to="./add-appliance"
+          showDefaultIcon
+          className="w-full sm:w-auto"
+        >
           Add Appliance
         </CommonButton>
 
-        <CommonButton variant="outline" to="./manage-appliances">
+        <CommonButton
+          variant="outline"
+          to="./manage-appliances"
+          className="w-full sm:w-auto"
+        >
           Manage All Appliances
         </CommonButton>
       </div>

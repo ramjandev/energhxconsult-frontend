@@ -15,7 +15,7 @@ import BSolarEnergy from "@/pages/consumer/basic/BSolarEnergy";
 import Building from "@/pages/consumer/basic/Building";
 import BWindEnergy from "@/pages/consumer/basic/BWindEnergy";
 import CreateBuilding from "@/pages/consumer/basic/CreateBuilding";
-import Settings from "@/pages/consumer/common/Settings";
+import Settings from "@/pages/consumer/basic/Settings";
 
 const basicConsumerRoutes = {
   path: "basic-consumer",

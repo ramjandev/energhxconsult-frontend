@@ -91,7 +91,7 @@ const EVManagement = () => {
       <BackButton />
 
       <CommonBorderWrapper isShadow className="">
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
           <div>
             <SectionHeader
               title="Added Electric Vehicles"
@@ -103,7 +103,7 @@ const EVManagement = () => {
           </CommonButton>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           {stats.map((s) => (
             <BMiniCard
               key={s.label}
@@ -117,20 +117,20 @@ const EVManagement = () => {
       </CommonBorderWrapper>
 
       <CommonBorderWrapper isShadow className="">
-        <SectionHeader title="Vehicle List" />
+        <SectionHeader size="xl" title="Vehicle List" />
 
         <div className="space-y-4">
           {ADDED_VEHICLES.map((v, i) => (
             <div
               key={i}
-              className="flex items-center justify-between bg-[#EAF7E6]/30 rounded-xl p-6 w-full gap-4 "
+              className="flex flex-col md:flex-row sm:items-center justify-between bg-[#EAF7E6]/30 border border-[#E7E9E8] rounded-xl p-4 w-full gap-4 "
             >
               <div className="flex items-center gap-4 w-full">
                 <div className="text-4xl">{v.icon}</div>
-                <div className="flex-1 flex flex-col gap-2 w-full ">
+                <div className="flex-1 flex flex-col gap-1 w-full ">
                   <CommonHeader className="font-bold!">{v.name}</CommonHeader>
 
-                  <div className="w-full flex justify-between ">
+                  <div className="w-full flex flex-col md:flex-row justify-between ">
                     <div className="flex">
                       <CommonHeader size="sm">Battery:</CommonHeader>
                       <CommonHeader
@@ -178,9 +178,9 @@ const EVManagement = () => {
       </CommonBorderWrapper>
 
       <CommonBorderWrapper isShadow className="">
-        <SectionHeader title="Charging Impact Summary" />
+        <SectionHeader size="xl" title="Charging Impact Summary" />
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           {chargingStats.map((stat) => (
             <BMiniCard
               key={stat.label}
@@ -204,7 +204,7 @@ const EVManagement = () => {
           ))}
         </CommonBorderWrapper>
 
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <CommonButton
             variant="outline"
             to="../add-ev-database"

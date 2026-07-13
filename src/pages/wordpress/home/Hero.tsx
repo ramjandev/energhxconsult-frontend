@@ -1,3 +1,4 @@
+import CommonButton from "@/common/button/CommonButton";
 import img from "../../../assets/wordpress/hero-banner.png";
 import WordPressWrapper from "../Common/WordPressWrapper";
 
@@ -20,12 +21,12 @@ const Hero = () => {
           </h1>
           <p className="text-xl mt-4">Your energy consumption</p>
           <div className="flex space-x-4 mt-8">
-            <button className="border border-primary hover:bg-primary text-primary hover:text-black px-10 py-3 rounded-md transition-colors cursor-pointer">
+            <CommonButton to="/" variant="outline">
               Sign up
-            </button>
-            <button className="border border-primary hover:bg-primary text-primary hover:text-black px-10 py-3 rounded-md transition-colors cursor-pointer">
+            </CommonButton>
+            <CommonButton to="/login" variant="outline">
               Sign in
-            </button>
+            </CommonButton>
           </div>
         </div>
       </WordPressWrapper>

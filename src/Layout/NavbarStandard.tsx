@@ -92,7 +92,7 @@ const NavbarStandard = () => {
               </h2>
 
               <p className="text-primary font-semibold text-sm">
-                {user?.data.userType}
+                {user?.data?.userType}
               </p>
             </div>
           </div>

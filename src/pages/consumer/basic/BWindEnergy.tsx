@@ -36,10 +36,10 @@ const BWindEnergy = () => {
         iconClassName="text-[#155DFC]"
       />
 
-      <div className="rounded-[14px] border-2 border-[#BEDBFF] bg-gradient-to-br from-[#EFF6FF] to-white p-6">
-        <SectionHeader title="Wind Analysis Results" />
+      <div className="rounded-[14px] border-2 border-[#BEDBFF] bg-gradient-to-br from-[#EFF6FF] to-white p-6 space-y-6">
+        <SectionHeader size="xl" title="Wind Analysis Results" />
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+        <div className="grid  grid-cols-2 xl:grid-cols-4 gap-6 ">
           <StatBlock
             icon={Wind}
             iconBg="bg-[#DBEAFE]"
@@ -176,7 +176,7 @@ const BWindEnergy = () => {
       </CommonBorderWrapper>
 
       <CommonBorderWrapper isShadow>
-        <SectionHeader size="lg" title="Are you interested in wind energy?" />
+        <SectionHeader size="xl" title="Are you interested in wind energy?" />
 
         <div className="flex flex-col sm:flex-row gap-4">
           <SelectableOptionCard

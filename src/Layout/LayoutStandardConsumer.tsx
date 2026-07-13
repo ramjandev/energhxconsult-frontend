@@ -12,8 +12,26 @@ import { Outlet, useLocation } from "react-router-dom";
 import { GiPlantRoots } from "react-icons/gi";
 import { MdLogout, MdSettings } from "react-icons/md";
 
-import { ClipboardList, FileSearch } from "lucide-react";
-import { FaBolt, FaHome, FaSolarPanel, FaWind } from "react-icons/fa";
+import { Building2, Car, ClipboardList, FileSearch } from "lucide-react";
+import { CiBatteryCharging } from "react-icons/ci";
+import { GoCodeReview } from "react-icons/go";
+
+import { CgProfile } from "react-icons/cg";
+import {
+  FaHome,
+  FaSolarPanel,
+  FaThermometerHalf,
+  FaTools,
+  FaWind,
+} from "react-icons/fa";
+import { GiJackPlug } from "react-icons/gi";
+import { GrServices, GrValidate } from "react-icons/gr";
+import { HiOutlineClipboardDocumentList } from "react-icons/hi2";
+import { IoBagCheckOutline } from "react-icons/io5";
+import { LiaUsersSolid } from "react-icons/lia";
+import { PiLightningBold } from "react-icons/pi";
+import { RiBattery2ChargeFill, RiContactsFill } from "react-icons/ri";
+import { SiCountingworkspro } from "react-icons/si";
 
 export const standardConsumerMenu: MenuItem[] = [
   {
@@ -24,28 +42,33 @@ export const standardConsumerMenu: MenuItem[] = [
 
   {
     path: "#",
-    label: "Energy Commodity Setup",
-    icon: FaBolt,
+    label: "Commodity Setup",
+    icon: PiLightningBold,
     children: [
+      {
+        path: "/standard-consumer/energy-commodity-setup",
+        label: "Energy Commodity Setup",
+        icon: FaTools,
+      },
       {
         path: "/standard-consumer/zev",
         label: "Zero Emission Vehicle (ZEV)",
-        icon: FaBolt,
+        icon: Car,
       },
       {
         path: "/standard-consumer/nzeb",
         label: "Net Zero Energy Building (NZEB)",
-        icon: FaBolt,
+        icon: RiBattery2ChargeFill,
       },
       {
         path: "/standard-consumer/thermal-comfort-simulation",
         label: "Thermal Comfort Simulation",
-        icon: FaBolt,
+        icon: FaThermometerHalf,
       },
       {
         path: "/standard-consumer/engineering-services",
         label: "Add Engineering Services",
-        icon: FaBolt,
+        icon: GrServices,
       },
       {
         path: "/standard-consumer/solar-energy",
@@ -65,17 +88,17 @@ export const standardConsumerMenu: MenuItem[] = [
       {
         path: "/standard-consumer/hvac-modelling",
         label: "Building HVAC Modelling",
-        icon: FaBolt,
+        icon: Building2,
       },
       {
         path: "/standard-consumer/battery-storage",
         label: "Battery Storage Design",
-        icon: FaBolt,
+        icon: CiBatteryCharging,
       },
       {
         path: "/standard-consumer/ev-charging",
         label: "EV Charging Infrastructure",
-        icon: FaBolt,
+        icon: GiJackPlug,
       },
     ],
   },
@@ -88,12 +111,12 @@ export const standardConsumerMenu: MenuItem[] = [
       {
         path: "/standard-consumer/res-sequence-validation",
         label: "RES Sequence Validation",
-        icon: FaBolt,
+        icon: GrValidate,
       },
       {
         path: "/standard-consumer/engineering-review",
         label: "Engineering Review & Approval",
-        icon: FaBolt,
+        icon: GoCodeReview,
       },
     ],
   },
@@ -106,12 +129,27 @@ export const standardConsumerMenu: MenuItem[] = [
       {
         path: "/standard-consumer/project-proposal",
         label: "Project Proposal & Contract",
-        icon: FaBolt,
+        icon: RiContactsFill,
+      },
+      {
+        path: "/standard-consumer/contract-documents",
+        label: "Contract Documents",
+        icon: HiOutlineClipboardDocumentList,
+      },
+      {
+        path: "/standard-consumer/contract-process",
+        label: "Contract Process",
+        icon: SiCountingworkspro,
+      },
+      {
+        path: "/standard-consumer/commodity-contract",
+        label: "Commodity Contract",
+        icon: SiCountingworkspro,
       },
       {
         path: "/standard-consumer/checkout-report",
         label: "Checkout Report",
-        icon: FaBolt,
+        icon: IoBagCheckOutline,
       },
     ],
   },
@@ -124,12 +162,12 @@ export const standardConsumerMenu: MenuItem[] = [
       {
         path: "/standard-consumer/profile-settings",
         label: "Profile Settings",
-        icon: FaBolt,
+        icon: CgProfile,
       },
       {
         path: "/standard-consumer/assigned-associates",
         label: "Assigned Associates",
-        icon: FaBolt,
+        icon: LiaUsersSolid,
       },
     ],
   },
@@ -145,7 +183,7 @@ const LayoutStandardConsumer = () => {
   const { user } = useSelector((state: RootState) => state.auth);
 
   const [devUser] = useState({
-    name: `${user?.data.firstname ?? ""} ${user?.data.lastname ?? ""}`.trim(),
+    name: `${user?.data?.firstname ?? ""} ${user?.data?.lastname ?? ""}`.trim(),
     role: user?.data?.userType ?? "",
     profileImg: user?.data?.profile_photo ?? userImg,
   });
@@ -171,7 +209,7 @@ const LayoutStandardConsumer = () => {
             <Sidebar menuItems={standardConsumerMenu} />
           </div>
 
-          <div className="flex-1 border-t border-t-[#E7E9E8] p-6 ">
+          <div className="flex-1 border-t border-t-[#E7E9E8] py-3 pl-3 pr-3 sm:py-6 sm:pl-6 sm:pr-6 2xl:pr-0  ">
             <Outlet />
           </div>
         </div>

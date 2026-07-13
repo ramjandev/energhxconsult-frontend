@@ -82,8 +82,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex w-full min-h-screen">
-      {/* Left side */}
+    <div className="flex w-full h-[calc(100vh-76px)]">
       <div className="hidden md:flex md:w-1/2 bg-primary text-white relative overflow-hidden">
         <div className="absolute top-[10%] left-[50%] transform -translate-x-1/2 w-24 h-24 rounded-full bg-green-700"></div>
         <div className="absolute top-[25%] right-[20%] transform rotate-45 w-16 h-16 bg-green-700"></div>
@@ -101,7 +100,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Right side - Login form */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-[#f7fcff]">
         <div className="w-full max-w-md">
           <h2 className="text-4xl font-bold mb-10 text-center text-primary">

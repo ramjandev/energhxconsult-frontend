@@ -124,7 +124,7 @@ const EVDatabase = () => {
           className="flex-wrap gap-2"
         />
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           {visible.map((v) => (
             <VehicleCard
               key={v.id}
@@ -141,7 +141,7 @@ const EVDatabase = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 pt-1">
+        <div className="flex flex-col sm:flex-row gap-3 pt-1">
           <CommonButton variant="outline" to="../custom-appliance">
             Upload Custom Appliance
           </CommonButton>
