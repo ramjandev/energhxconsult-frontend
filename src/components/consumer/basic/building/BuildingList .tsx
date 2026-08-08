@@ -1,81 +1,44 @@
 import CommonButton from "@/common/button/CommonButton";
 import SectionHeader from "@/common/header/SectionHeader";
-import BuildingEmpty from "@/components/consumer/basic/building/BuildingEmpty";
-import BuildingCard, {
-  BuildingType,
-} from "@/components/consumer/basic/building/card/BuildingCard";
-import { useState } from "react";
-
-const INITIAL_BUILDINGS: BuildingType[] = [
-  {
-    id: 1,
-    name: "Ramjan's Building",
-    type: "Bungalow",
-    subType: "Software",
-    rooms: 8,
-    evs: 4,
-    energy: "2,340 kWh/month",
-    buildType: "Concrete Building",
-    info: "4 batteries installed",
-  },
-  {
-    id: 2,
-    name: "USA",
-    type: "Software",
-    subType: "Software",
-    rooms: 8,
-    evs: 4,
-    energy: "2,340 kWh/month",
-    buildType: "Educational",
-    info: "4 batteries installed",
-  },
-  {
-    id: 3,
-    name: "Happy House",
-    type: "Software",
-    subType: "Software",
-    rooms: 8,
-    evs: 4,
-    energy: "2,340 kWh/month",
-    buildType: "Educational",
-    info: "2 Pets avenues Lagos, 3032020",
-  },
-];
+import MiniSpinner from "@/common/loading/MiniSpinner";
+import { useGetAllBuildingsQuery } from "@/store/consumer/basic/building/buildingApi";
+import BuildingEmpty from "./BuildingEmpty";
+import BuildingCard from "./card/BuildingCard";
 
 const BuildingList = () => {
-  const [selectedBuilding, setSelectedBuilding] = useState<BuildingType | null>(
-    null,
-  );
-  const [buildings, setBuildings] = useState<BuildingType[]>(INITIAL_BUILDINGS);
-
-  const addBuilding = (b: BuildingType) => setBuildings((prev) => [...prev, b]);
-
-  if (buildings?.length === 0) {
-    return <BuildingEmpty />;
-  }
+  const { data, isLoading } = useGetAllBuildingsQuery();
+  const buildings = data?.data ?? [];
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start  justify-between gap-3">
-        <div>
-          <SectionHeader
-            title="Building Information"
-            description="Manage your buildings and their energy data"
-          />
-        </div>
-        <CommonButton
-          shape="rounded"
-          to="./create-building"
-          showDefaultIcon
-          className="w-full sm:w-auto"
-        >
-          Create Building
-        </CommonButton>
-      </div>
+      {isLoading ? (
+        <MiniSpinner />
+      ) : buildings && buildings?.length > 0 ? (
+        <>
+          <div className="flex flex-col sm:flex-row items-start  justify-between gap-3">
+            <div>
+              <SectionHeader
+                title="Building Information"
+                description="Manage your buildings and their energy data"
+              />
+            </div>
+            <CommonButton
+              shape="rounded"
+              to="./create-building"
+              showDefaultIcon
+              className="w-full sm:w-auto"
+            >
+              Create Building
+            </CommonButton>
+          </div>
 
-      {buildings.map((b) => (
-        <BuildingCard key={b.id} building={b} />
-      ))}
+          {buildings.map((b) => (
+            <BuildingCard key={b.user_building_details_id} building={b} />
+          ))}
+        </>
+      ) : (
+        <BuildingEmpty />
+      )}
     </div>
   );
 };

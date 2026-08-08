@@ -16,12 +16,18 @@ import Building from "@/pages/consumer/basic/Building";
 import BWindEnergy from "@/pages/consumer/basic/BWindEnergy";
 import CreateBuilding from "@/pages/consumer/basic/CreateBuilding";
 import Settings from "@/pages/consumer/basic/Settings";
+import ProtectedRoute from "./ProtectedRoute";
 
 const basicConsumerRoutes = {
   path: "basic-consumer",
-  element: <LayoutBasicConsumer />,
+  element: (
+    <ProtectedRoute allowedRoles={["CONSUMER"]}>
+      <LayoutBasicConsumer />
+    </ProtectedRoute>
+  ),
   children: [
-    { path: "dashboard", index: true, element: <BDashboard /> },
+    { index: true, element: <BDashboard /> },
+    { path: "dashboard", element: <BDashboard /> },
     {
       path: "building",
       element: <Building />,
@@ -30,7 +36,7 @@ const basicConsumerRoutes = {
         { index: true, element: <BuildingList /> },
         { path: "create-building", element: <CreateBuilding /> },
         { path: "building-details/:id", element: <BuildingDetails /> },
-        { path: "add-room", element: <AddRoom /> },
+        { path: "add-room/:id", element: <AddRoom /> },
         { path: "add-appliance", element: <ApplianceDatabase /> },
         { path: "custom-appliance", element: <CustomAppliance /> },
         { path: "add-ev", element: <EVManagement /> },

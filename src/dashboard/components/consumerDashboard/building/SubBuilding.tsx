@@ -13,7 +13,7 @@ import AdminCommonHeader from "@/dashboard/Common/AdminCommonHeader";
 import {
   useCreatingSubBuildingsTypesMutation,
   useGetAllBuildingsTypesQuery,
-} from "@/store/consumer/building/buildingApi";
+} from "@/store/consumer/basic/building/buildingApi";
 // Validation schema
 const schema = z.object({
   subType: z.string().min(1, "Sub Type is required"),

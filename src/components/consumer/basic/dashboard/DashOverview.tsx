@@ -16,7 +16,7 @@ const DashOverview = () => {
         description="Our comprehensive audit system analyzes your building's energy performance and provides actionable insights for optimization."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 ">
         <FeatureCard
           icon={<LuFileSearch className="w-full h-full" />}
           iconBgClassName="bg-primary-green/12"
@@ -52,6 +52,7 @@ const DashOverview = () => {
           size="xl"
           shape="rounded"
           rightIcon={<FaArrowRightLong className="w-4 h-4" />}
+          to="../analysis"
         >
           Start Your Audit Now
         </CommonButton>

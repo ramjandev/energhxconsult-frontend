@@ -2,6 +2,7 @@ import CloseButton from "@/common/button/CloseButton";
 import CommonButton from "@/common/button/CommonButton";
 import CommonSelect from "@/common/button/CommonSelect";
 import SectionHeader from "@/common/header/SectionHeader";
+import { AuditType } from "@/store/consumer/basic/analysis/types/analysis";
 import React, { useState } from "react";
 import AuditTypeCard from "./AuditTypeCard";
 
@@ -14,22 +15,19 @@ interface StartEnergyAuditModalProps {
   isOpen: boolean;
   onClose: () => void;
   buildings: Option[];
-  onStart: (data: {
-    buildingId: string;
-    auditType: "basic" | "comprehensive";
-  }) => void;
+  onStart: (data: { buildingId: string; auditType: AuditType }) => void;
+  isLoading: boolean;
 }
-
+// export type AuditType = "BASIC_AUDIT" | "COMPREHENSIVE_AUDIT";
 const StartEnergyAuditModal: React.FC<StartEnergyAuditModalProps> = ({
   isOpen,
   onClose,
   buildings,
+  isLoading,
   onStart,
 }) => {
   const [buildingId, setBuildingId] = useState("");
-  const [auditType, setAuditType] = useState<"basic" | "comprehensive">(
-    "basic",
-  );
+  const [auditType, setAuditType] = useState<AuditType>("BASIC_AUDIT");
 
   if (!isOpen) return null;
 
@@ -67,14 +65,14 @@ const StartEnergyAuditModal: React.FC<StartEnergyAuditModalProps> = ({
             <AuditTypeCard
               title="Basic Audit"
               description="Quick energy assessment with basic recommendations"
-              selected={auditType === "basic"}
-              onClick={() => setAuditType("basic")}
+              selected={auditType === "BASIC_AUDIT"}
+              onClick={() => setAuditType("BASIC_AUDIT")}
             />
             <AuditTypeCard
               title="Comprehensive Audit"
               description="Detailed analysis with advanced recommendations"
-              selected={auditType === "comprehensive"}
-              onClick={() => setAuditType("comprehensive")}
+              selected={auditType === "COMPREHENSIVE_AUDIT"}
+              onClick={() => setAuditType("COMPREHENSIVE_AUDIT")}
             />
           </div>
         </div>
@@ -83,7 +81,12 @@ const StartEnergyAuditModal: React.FC<StartEnergyAuditModalProps> = ({
           <CommonButton variant="outline" onClick={onClose}>
             Cancel
           </CommonButton>
-          <CommonButton onClick={handleStart} disabled={!buildingId}>
+          <CommonButton
+            onClick={handleStart}
+            disabled={!buildingId}
+            isLoading={isLoading}
+            loadingText="Starting audit..."
+          >
             Start Audit
           </CommonButton>
         </div>

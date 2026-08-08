@@ -3,9 +3,21 @@ import CommonButton from "@/common/button/CommonButton";
 import SectionHeader from "@/common/header/SectionHeader";
 import IconSectionHeader from "@/components/consumer/basic/renewable/IconSectionHeader";
 import ProgressStat from "@/components/consumer/basic/renewable/ProgressStat";
+import {
+  defaultWindValues,
+  windFormSchema,
+  WindFormValues,
+} from "@/components/consumer/basic/renewable/schema/windFormSchema";
 import SelectableOptionCard from "@/components/consumer/basic/renewable/SelectableOptionCard";
 import SpecRow from "@/components/consumer/basic/renewable/SpecRow";
 import StatBlock from "@/components/consumer/basic/renewable/StatBlock";
+import { useCalculateWindMutation } from "@/store/consumer/basic/renewables/renewableEnergyAPI";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+
+import DashboardCardSkeleton from "@/common/loading/DashboardCardSkeleton";
 import {
   ArrowRight,
   Calendar,
@@ -15,19 +27,44 @@ import {
   Wind,
   X,
 } from "lucide-react";
-import { useState } from "react";
+
+const fmtNumber = (n: number) => n.toLocaleString("en-US");
+const fmtCurrency = (n: number, currency = "$") =>
+  `${currency}${fmtNumber(Math.round(n))}`;
 
 const BWindEnergy = () => {
-  const [interested, setInterested] = useState<"yes" | "no" | null>(null);
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    watch,
+    formState: { errors },
+  } = useForm<WindFormValues>({
+    resolver: zodResolver(windFormSchema),
+    defaultValues: defaultWindValues,
+    mode: "onChange",
+  });
 
-  const handleSubmit = () => {
-    if (!interested) return;
-    console.log("Wind interest →", interested);
-    // TODO: dispatch / API call, then navigate next
+  const [calculateWind, { data, isLoading }] = useCalculateWindMutation();
+
+  useEffect(() => {
+    const parsed = windFormSchema.safeParse(getValues());
+    if (!parsed.success) return;
+    const payload = parsed.data;
+    calculateWind(payload);
+  }, []);
+
+  const onSubmit = (values: WindFormValues) => {
+    if (!values) return;
   };
 
+  const impact = data?.data.environmental_impact;
+  const summary = data?.data.summary;
+  const site = data?.data.wind_resource_assessment;
+  const [interested, setInterested] = useState<"yes" | "no" | null>(null);
+
   return (
-    <div className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
       <IconSectionHeader
         icon={Wind}
         title="Wind Energy Potential"
@@ -36,47 +73,56 @@ const BWindEnergy = () => {
         iconClassName="text-[#155DFC]"
       />
 
-      <div className="rounded-[14px] border-2 border-[#BEDBFF] bg-gradient-to-br from-[#EFF6FF] to-white p-6 space-y-6">
-        <SectionHeader size="xl" title="Wind Analysis Results" />
+      {isLoading ? (
+        <DashboardCardSkeleton />
+      ) : (
+        summary && (
+          <div className="rounded-[14px] border-2 border-[#BEDBFF] bg-gradient-to-br from-[#EFF6FF] to-white p-6 space-y-6">
+            <SectionHeader size="xl" title="Wind Analysis Results" />
 
-        <div className="grid  grid-cols-2 xl:grid-cols-4 gap-6 ">
-          <StatBlock
-            icon={Wind}
-            iconBg="bg-[#DBEAFE]"
-            iconColor="text-[#155DFC]"
-            label="Recommended System"
-            value="5.0 kW"
-            sub="1 turbine"
-          />
+            <div className="grid  grid-cols-2 xl:grid-cols-4 gap-6 ">
+              <StatBlock
+                icon={Wind}
+                iconBg="bg-[#DBEAFE]"
+                iconColor="text-[#155DFC]"
+                label="Recommended System"
+                value={` ${summary.recommended_system_kw} kW `}
+                sub={
+                  summary.recommended_system_label ??
+                  "Based on your location and energy usage"
+                }
+              />
 
-          <StatBlock
-            icon={TrendingUp}
-            iconBg="bg-[#DCFCE7]"
-            iconColor="text-[#00A63E]"
-            label="Annual Generation"
-            value="8,200 kWh"
-            sub="Per year"
-          />
+              <StatBlock
+                icon={TrendingUp}
+                iconBg="bg-[#DCFCE7]"
+                iconColor="text-[#00A63E]"
+                label="Annual Generation"
+                value={` ${fmtNumber(summary.annual_generation_kwh)} kWh `}
+                sub={"Per year"}
+              />
 
-          <StatBlock
-            icon={DollarSign}
-            iconBg="bg-[#DBEAFE]"
-            iconColor="text-[#155DFC]"
-            label="Annual Savings"
-            value="$1,380"
-            sub="Energy cost reduction"
-          />
+              <StatBlock
+                icon={DollarSign}
+                iconBg="bg-[#DBEAFE]"
+                iconColor="text-[#155DFC]"
+                label="Annual Savings"
+                value={` ${fmtCurrency(summary.annual_savings_usd)} `}
+                sub={"Energy cost reduction"}
+              />
 
-          <StatBlock
-            icon={Calendar}
-            iconBg="bg-[#F3E8FF]"
-            iconColor="text-[#9810FA]"
-            label="Payback Period"
-            value="11.2 years"
-            sub="Return on investment"
-          />
-        </div>
-      </div>
+              <StatBlock
+                icon={Calendar}
+                iconBg="bg-[#F3E8FF]"
+                iconColor="text-[#9810FA]"
+                label="Payback Period"
+                value={` ${summary.payback_period_years} years `}
+                sub={"Return on investment"}
+              />
+            </div>
+          </div>
+        )
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CommonBorderWrapper isShadow>
@@ -84,12 +130,62 @@ const BWindEnergy = () => {
 
           <div>
             <SpecRow label="Turbine Type" value="Horizontal Axis" />
-            <SpecRow label="Rotor Diameter" value="6.2 m" />
-            <SpecRow label="Hub Height" value="18 m" />
-            <SpecRow label="Cut-in Wind Speed" value="3.5 m/s" />
+            <SpecRow label="Rated Power" value="5 kW per turbine" />
+            <SpecRow label="Number of Turbines" value="1" />
+            <SpecRow label="Rotor Diameter" value="6.2 meters" />
+            <SpecRow label="Hub Height" value="18 meters" />
             <SpecRow
-              label="Rated Wind Speed"
-              value="12 m/s"
+              label="Grid Connection"
+              value="Grid-Tied with Net Metering"
+              showBorder={false}
+            />
+          </div>
+        </CommonBorderWrapper>
+
+        <CommonBorderWrapper isShadow>
+          <SectionHeader size="xl" title="Wind Resource" />
+
+          <div>
+            <SpecRow label="Mean Wind Speed" value="5.5 m/s" />
+            <SpecRow label="Measurement Height" value="10 meters" />
+            <SpecRow label="Weibull k" value="2" />
+            <SpecRow label="Air Density" value="1.225 kg/m³" />
+            <SpecRow label="Turbulence Intensity" value="9.8%" />
+            <SpecRow
+              label="Terrain Roughness Class"
+              value="2"
+              showBorder={false}
+            />
+          </div>
+        </CommonBorderWrapper>
+
+        <CommonBorderWrapper isShadow>
+          <SectionHeader size="xl" title="Turbine Performance" />
+
+          <div>
+            <SpecRow label="Power Coefficient (Cp)" value="0.4" />
+            <SpecRow label="Cut-in Speed" value="3.5 m/s" />
+            <SpecRow label="Cut-out Speed" value="25 m/s" />
+            <SpecRow label="System Efficiency" value="85.7%" />
+            <SpecRow label="Annual Operating Hours" value="8,760 hrs" />
+            <SpecRow
+              label="Availability Factor"
+              value="100%"
+              showBorder={false}
+            />
+          </div>
+        </CommonBorderWrapper>
+
+        <CommonBorderWrapper isShadow>
+          <SectionHeader size="xl" title="Demand & Grid Impact" />
+
+          <div>
+            <SpecRow label="Monthly Energy" value="1,520 kWh" />
+            <SpecRow label="Annual Energy" value="18,250 kWh" />
+            <SpecRow label="Emissions Factor" value="0.5 kg CO₂/kWh" />
+            <SpecRow
+              label="CO₂ Absorbed per Tree/Year"
+              value="21.8 kg"
               showBorder={false}
             />
           </div>
@@ -106,6 +202,8 @@ const BWindEnergy = () => {
               valueClass="text-green-600"
             />
             <SpecRow label="Net Cost" value="$10,640" />
+            <SpecRow label="Electricity Tariff Rate" value="$0.168 / kWh" />
+            <SpecRow label="Annual O&M Cost" value="$200" />
             <SpecRow
               label="Annual Savings"
               value="$1,380"
@@ -127,22 +225,28 @@ const BWindEnergy = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <StatBlock
             label="CO₂ Reduction"
-            value="4.1 tons/year"
-            valueClass="text-green-600"
-            sub="Equivalent to planting 95 trees annually"
+            value={`${impact?.co2_reduction_tons_per_year ?? 0} tons/year`}
+            valueClass="text-green-600!"
+            sub={
+              impact
+                ? `Equivalent to planting ${fmtNumber(
+                    impact.equivalent_trees_planted,
+                  )} trees annually`
+                : "Equivalent to planting 95 trees annually"
+            }
           />
 
           <StatBlock
             label="Clean Energy"
-            value="100%"
-            valueClass="text-green-600"
+            value={impact ? `${impact.clean_energy_percentage}%` : "0%"}
+            valueClass="text-green-600!"
             sub="Renewable energy source"
           />
 
           <StatBlock
             label="Energy Independence"
-            value="60%"
-            valueClass="text-green-600"
+            value={impact ? `${impact.energy_independence_percentage}%` : "0%"}
+            valueClass="text-green-600!"
             sub="Self-sufficiency rating"
           />
         </div>
@@ -153,24 +257,32 @@ const BWindEnergy = () => {
         <div className="space-y-4">
           <ProgressStat
             label="Average Wind Speed"
-            status="6.5 m/s (Good)"
-            percentage={75}
+            status={
+              site
+                ? `${site.hub_height_wind_speed_ms} m/s (${site.average_wind_speed.rating})`
+                : "6.5 m/s (Good)"
+            }
+            percentage={site ? site.average_wind_speed.score_pct : 0}
             color="bg-[#155DFC]!"
           />
 
           <ProgressStat
             label="Site Suitability"
-            status="Good"
-            percentage={75}
+            status={site ? site.site_suitability.rating : "Good"}
+            percentage={site ? site.site_suitability.score_pct : 0}
             color="bg-[#155DFC]!"
           />
 
-          <ProgressStat label="Turbulence Level" status="Low" percentage={29} />
+          <ProgressStat
+            label="Turbulence Level"
+            status={site ? site.turbulence_level.rating : "Low"}
+            percentage={site ? site.turbulence_level.score_pct : 0}
+          />
 
           <ProgressStat
             label="Obstacle-Free Zone"
-            status="Excellent"
-            percentage={87}
+            status={site ? site.obstacle_free_zone.rating : "Excellent"}
+            percentage={site ? site.obstacle_free_zone.score_pct : 0}
           />
         </div>
       </CommonBorderWrapper>
@@ -197,18 +309,18 @@ const BWindEnergy = () => {
           />
         </div>
       </CommonBorderWrapper>
+
       <div className="flex justify-end">
         <CommonButton
           type="submit"
-          onClick={handleSubmit}
-          disabled={!interested}
+          disabled={!interested || isLoading}
           to="../biomass-energy"
         >
           Save with Next
           <ArrowRight className="w-4 h-4" />
         </CommonButton>
       </div>
-    </div>
+    </form>
   );
 };
 

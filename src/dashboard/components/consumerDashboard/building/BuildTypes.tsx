@@ -1,5 +1,5 @@
 import AdminCommonHeader from "@/dashboard/Common/AdminCommonHeader";
-import { useCreatingBuildingsTypesMutation } from "@/store/consumer/building/buildingApi";
+import { useCreatingBuildingsTypesMutation } from "@/store/consumer/basic/building/buildingApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

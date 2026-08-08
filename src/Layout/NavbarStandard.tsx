@@ -2,7 +2,7 @@ import Logo from "@/assets/images/logo.svg";
 import userImg from "@/assets/images/user.png";
 import DropDown from "@/common/DropDown";
 import { RootState } from "@/store/store";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { FiMenu } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -19,25 +19,8 @@ const menuItems = [
 
 const NavbarStandard = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { user } = useSelector((state: RootState) => state.auth);
-
-  // Detect outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -64,19 +47,16 @@ const NavbarStandard = () => {
           </ul>
 
           <div className="flex items-center gap-4">
-            <div className="flex gap-2 relative" ref={dropdownRef}>
-              <img
-                src={user?.data?.profile_photo || userImg}
-                alt="User"
-                className="w-12 h-12 ring-2 ring-primary rounded-full cursor-pointer"
-                onClick={() => setIsDropdownOpen((prev) => !prev)}
+            <div className="flex gap-2 relative">
+              <DropDown
+                trigger={
+                  <img
+                    src={user?.data?.profile_photo || userImg}
+                    alt="User"
+                    className="w-12 h-12 ring-2 ring-primary rounded-full cursor-pointer"
+                  />
+                }
               />
-
-              {isDropdownOpen && (
-                <div className="absolute top-10 right-0 mt-2 z-50">
-                  <DropDown />
-                </div>
-              )}
             </div>
             <button
               onClick={toggleMenu}

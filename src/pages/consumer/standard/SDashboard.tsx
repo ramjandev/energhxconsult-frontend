@@ -7,8 +7,36 @@ import AdvancedEngineeringModules from "@/components/consumer/standard/SDashboar
 import ImplementationWorkflow from "@/components/consumer/standard/SDashboard/ImplementationWorkflow";
 import RenewableEngineeringSizing from "@/components/consumer/standard/SDashboard/RenewableEngineeringSizing";
 import SavingsImpactCards from "@/components/consumer/standard/SDashboard/SavingsImpactCards";
+import {
+  useGetDashboardQuery,
+  useUtilityPermissionsMutation,
+} from "@/store/consumer/standard/POTENTIALLY OBSOLETE/potentiallyApi";
 
 const SDashboard = () => {
+  const { data, isLoading } = useGetDashboardQuery();
+
+  const [utilityPermissions, { isLoading: isUtilityLoading }] =
+    useUtilityPermissionsMutation();
+
+  const handleUtilityPermission = async () => {
+    try {
+      if (!data) return;
+      await utilityPermissions({
+        status: "COMPLETED",
+        completed: true,
+        authorized: true,
+        utilityId: data?.id,
+        commodityId: data?.userId,
+        consentGiven: true,
+        signedAt: Date.now().toString(),
+      }).unwrap();
+    } catch (err) {
+      console.error("Failed to start audit:", err);
+    }
+  };
+
+  const dashboard = data?.dashboard;
+
   return (
     <div className="space-y-4 md:space-y-6 lg:space-y-12">
       <Welcome
@@ -41,6 +69,17 @@ const SDashboard = () => {
           </CommonButton>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
+          {dashboard?.standardPlanStatus?.cards.map((card) => (
+            <BMiniCard
+              key={card.label}
+              label={card.label}
+              value={`${card.value ?? 0} ${card.unit ?? ""}`}
+              className=" border-[#2DAD00]/20! bg-[linear-gradient(135deg,_rgba(45,173,0,0.10)_0%,_rgba(45,173,0,0.05)_100%)]"
+              des={card.subtext || ""}
+            />
+          ))}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
           <BMiniCard
             label="Energy Score"
@@ -119,8 +158,12 @@ const SDashboard = () => {
           </>
         }
       />
+      {dashboard && (
+        <AdvancedEngineeringModules
+          advancedEngineeringModules={dashboard?.advancedEngineeringModules!}
+        />
+      )}
 
-      <AdvancedEngineeringModules />
       <RenewableEngineeringSizing />
       <ImplementationWorkflow />
       <SavingsImpactCards />

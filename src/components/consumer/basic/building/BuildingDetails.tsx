@@ -4,59 +4,46 @@ import CommonBorderWrapper from "@/common/button/CommonBorderWrapper";
 import CommonButton from "@/common/button/CommonButton";
 import CommonHeader from "@/common/header/CommonHeader";
 import SectionHeader from "@/common/header/SectionHeader";
+import { useBuildingDetailsQuery } from "@/store/consumer/basic/building/buildingApi";
+import { useParams } from "react-router-dom";
 import BMiniCard from "./card/BMiniCard";
 import RoomCard from "./room/RoomCard";
-const DEMO_ROOMS = [
-  {
-    id: 1,
-    name: "Living Room",
-    type: "Living Room",
-    appliances: 12,
-    usage: "340 kWh/month",
-  },
-  {
-    id: 2,
-    name: "Master Bedroom",
-    type: "Bedroom",
-    appliances: 8,
-    usage: "180 kWh/month",
-  },
-  {
-    id: 3,
-    name: "Kitchen",
-    type: "Kitchen",
-    appliances: 15,
-    usage: "520 kWh/month",
-  },
-  {
-    id: 4,
-    name: "Office",
-    type: "Office",
-    appliances: 6,
-    usage: "210 kWh/month",
-  },
-];
 
 const BuildingDetails = () => {
-  const b = {
-    name: "Ramjan's Building",
-    type: "Bungalow",
-    subType: "Software, USA",
-    rooms: 8,
-    evs: 4,
-    energy: "2,340 kWh/month",
-    buildType: "Concrete Building",
-  };
+  const { id } = useParams<{ id: string }>();
 
+  const { data } = useBuildingDetailsQuery(id || "", {
+    skip: !id,
+    refetchOnMountOrArgChange: true,
+  });
+
+  const buildingDetails = data?.data;
+
+  const buildingStart = [
+    { label: "Total Rooms", value: buildingDetails?.rooms?.length },
+    {
+      label: "Appliances",
+      value: buildingDetails?.user_building_utility?.length,
+    },
+    { label: "Electric Vehicles", value: buildingDetails?.evs?.length },
+    {
+      label: "Total Energy",
+      value: `${buildingDetails?.user_building_utility[0]?.unit} kWh`,
+    },
+  ];
+  const rooms = buildingDetails?.rooms ?? [];
   return (
     <div className=" space-y-6">
       <BackButton />
       <CommonBorderWrapper isShadow>
         <div className="flex items-start justify-between">
           <div>
-            <CommonHeader size="xl">{b.name}</CommonHeader>
+            <CommonHeader size="xl">
+              {buildingDetails?.building_name}
+            </CommonHeader>
             <CommonHeader size="sm">
-              {b.type} • {b.subType}
+              {buildingDetails?.building_type?.name} •{" "}
+              {buildingDetails?.building_sub_type?.name}
             </CommonHeader>
           </div>
           <div>
@@ -64,17 +51,19 @@ const BuildingDetails = () => {
           </div>
         </div>
         <div className="grid grid-col sm:grid-cols-2 md:grid-cols-4 gap-3 ">
-          {[
-            { label: "Total Rooms", value: "8" },
-            { label: "Appliances", value: "41" },
-            { label: "Electric Vehicles", value: "4" },
-            { label: "Total Energy", value: "1,250 kWh" },
-          ].map((s) => (
-            <BMiniCard key={s.label} label={s.label} value={s.value} />
+          {buildingStart.map((s) => (
+            <BMiniCard
+              key={s.label}
+              label={s.label}
+              value={s.value as string}
+            />
           ))}
         </div>
         <div className="flex flex-col sm:flex-row justify-between gap-2 ">
-          <CommonButton to="../add-room" showDefaultIcon>
+          <CommonButton
+            to={`../add-room/${buildingDetails?.user_building_details_id}`}
+            showDefaultIcon
+          >
             Add Room
           </CommonButton>
 
@@ -87,7 +76,7 @@ const BuildingDetails = () => {
       <div className="space-y-2">
         <SectionHeader title="Rooms" />
         <div className="space-y-4">
-          {DEMO_ROOMS.map((room) => (
+          {rooms.map((room) => (
             <RoomCard key={room.id} room={room} />
           ))}
         </div>

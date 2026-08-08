@@ -2,6 +2,12 @@ import CommonButton from "@/common/button/CommonButton";
 import SectionHeader from "@/common/header/SectionHeader";
 import EnergyAnalysisReport from "@/components/consumer/basic/analysis/EnergyAnalysisReport";
 import StartEnergyAuditModal from "@/components/consumer/basic/analysis/StartEnergyAuditModal";
+import { useStartAuditMutation } from "@/store/consumer/basic/analysis/analysisApi";
+import {
+  AuditType,
+  EnergyAuditResponse,
+} from "@/store/consumer/basic/analysis/types/analysis";
+import { useGetAllBuildingsQuery } from "@/store/consumer/basic/building/buildingApi";
 import { useEffect, useState } from "react";
 
 const BAnalysis = () => {
@@ -12,23 +18,30 @@ const BAnalysis = () => {
     setIsModalOpen(true);
   }, []);
 
-  const buildings = [
-    { label: "Building A", value: "building-a" },
-    { label: "Building B", value: "building-b" },
-  ];
+  const { data, isLoading } = useGetAllBuildingsQuery();
+  const buildings =
+    data?.data?.map((building) => ({
+      label: building.building_name,
+      value: building.user_building_details_id,
+    })) ?? [];
+  const [startAudit, { isLoading: isAuditLoading, data: auditData }] =
+    useStartAuditMutation();
 
-  const handleStart = (data: {
+  const handleStart = async (data: {
     buildingId: string;
-    auditType: "basic" | "comprehensive";
+    auditType: AuditType;
   }) => {
-    console.log("Starting audit:", data);
-
-    // TODO: Call API / Navigate
-
-    setHasStartedAudit(true);
-    setIsModalOpen(false);
+    try {
+      await startAudit(data).unwrap();
+      setHasStartedAudit(true);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("Failed to start audit:", err);
+    }
   };
 
+  const [selectedReport, setSelectedReport] =
+    useState<EnergyAuditResponse | null>(null);
   return (
     <div>
       {!hasStartedAudit && (
@@ -45,9 +58,10 @@ const BAnalysis = () => {
         onClose={() => setIsModalOpen(false)}
         buildings={buildings}
         onStart={handleStart}
+        isLoading={isAuditLoading}
       />
 
-      {hasStartedAudit && <EnergyAnalysisReport />}
+      {hasStartedAudit && <EnergyAnalysisReport report={selectedReport} />}
     </div>
   );
 };

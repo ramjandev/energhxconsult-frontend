@@ -19,6 +19,7 @@ const BDashboard = () => {
               size="lg"
               rightIcon={<FaArrowRightLong className="w-4 h-4" />}
               className="w-full! sm:w-auto"
+              to="../analysis"
             >
               Start Audit
             </CommonButton>

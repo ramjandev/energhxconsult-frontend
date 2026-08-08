@@ -3,8 +3,11 @@ import { useCreatePasswordMutation } from "@/store/auth/authApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
+import SectionHeader from "../header/SectionHeader";
+import ButtonWithLoading from "../loading/ButtonWithLoading";
 
 const schema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -15,6 +18,7 @@ type FormData = z.infer<typeof schema>;
 
 const CreatePassword = () => {
   const [createPassword, { isLoading }] = useCreatePasswordMutation();
+  const [showPassword, setShowPassword] = useState(false);
 
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -56,19 +60,18 @@ const CreatePassword = () => {
 
   const onSubmit = async (data: FormData) => {
     if (token) {
-      await createPassword({ login: data, token });
+      await createPassword({ ...data, token });
       navigate("/login");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-76px)] bg-gray-100 p-4">
+    <div className="flex items-center justify-center min-h-[calc(100vh-76px)] bg-gray-100 p-4 border border-[#E7E9E8]">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white rounded-2xl shadow-md p-6 w-full max-w-md space-y-4"
       >
-        <h2 className="text-2xl font-semibold text-center">Create Password</h2>
-
+        <SectionHeader title="Create Password" />
         <div>
           <label className="block mb-1 text-gray-700">Email</label>
           <input
@@ -84,11 +87,22 @@ const CreatePassword = () => {
 
         <div>
           <label className="block mb-1 text-gray-700">New Password</label>
-          <input
-            type="password"
-            {...register("password")}
-            className="w-full border border-gray-300 rounded-md p-2"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              {...register("password")}
+              className="w-full border border-gray-300 rounded-md p-2 pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+              tabIndex={-1}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
           {errors.password && (
             <p className="text-red-500 text-sm mt-1">
               {errors.password.message}
@@ -97,7 +111,11 @@ const CreatePassword = () => {
         </div>
 
         <CommonButton type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? "Submitting..." : "Create Password"}
+          {isLoading ? (
+            <ButtonWithLoading title="Processing..." />
+          ) : (
+            "Create Password"
+          )}
         </CommonButton>
       </form>
     </div>

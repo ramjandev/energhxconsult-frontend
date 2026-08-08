@@ -5,21 +5,28 @@ export const authApi = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     login: build.mutation<LoginResponse, { email: string; password: string }>({
       query: (user) => ({
-        url: "/auth/login/server",
+        url: "/auth/login",
         method: "POST",
         body: user,
       }),
     }),
     userRegister: build.mutation<any, FormData>({
       query: (user) => ({
-        url: "/auth/register/server",
+        url: "/auth/register",
         method: "POST",
+        body: user,
+      }),
+    }),
+    updateProfile: build.mutation<any, FormData>({
+      query: (user) => ({
+        url: "/users/profile",
+        method: "PATCH",
         body: user,
       }),
     }),
     createPassword: build.mutation<
       any,
-      { token: string; login: { email: string; password: string } }
+      { token: string; email: string; password: string }
     >({
       query: (user) => ({
         url: `/auth/create-password`,
@@ -54,19 +61,7 @@ export const authApi = baseAPI.injectEndpoints({
         body: user,
       }),
     }),
-    updatePassword: build.mutation<
-      any,
-      {
-        password: string;
-        confirmPassword: string;
-      }
-    >({
-      query: (user) => ({
-        url: `/auth/change-password`,
-        method: "PATCH",
-        body: user,
-      }),
-    }),
+
     updateUser: build.mutation<any, FormData>({
       query: (user) => ({
         url: `/users/profile/server`,
@@ -80,10 +75,10 @@ export const authApi = baseAPI.injectEndpoints({
 export const {
   useLoginMutation,
   useUserRegisterMutation,
+  useUpdateProfileMutation,
   useCreatePasswordMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useChangePasswordMutation,
-  useUpdatePasswordMutation,
   useUpdateUserMutation,
 } = authApi;

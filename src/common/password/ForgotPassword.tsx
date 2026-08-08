@@ -1,8 +1,11 @@
+import { inputClass } from "@/pages/Login";
 import { useForgotPasswordMutation } from "@/store/auth/authApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import CommonButton from "../button/CommonButton";
+import SectionHeader from "../header/SectionHeader";
+import ButtonWithLoading from "../loading/ButtonWithLoading";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -30,22 +33,13 @@ const ForgotPassword = () => {
     }
   };
 
-  const inputClass = {
-    input: "w-full border border-primary-gray p-2 outline-none ",
-    label: "text-primary-gray block mb-1",
-    error: "text-red-500 text-sm mt-1",
-  };
-
   return (
-    <div className=" h-[calc(100vh-74px)] flex justify-center items-center bg-gray-50">
+    <div className=" h-[calc(100vh-74px)] flex justify-center items-center bg-gray-50 border-[#E7E9E8]">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white rounded-2xl shadow-md p-8 w-full max-w-md space-y-6"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-800">
-          Forgot Password
-        </h2>
-
+        <SectionHeader title="Forgot Password" />
         <div className="">
           <label className={inputClass.label}>Email</label>
           <input
@@ -62,7 +56,11 @@ const ForgotPassword = () => {
         </div>
 
         <CommonButton type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? "Sending..." : "Send Email"}
+          {isLoading ? (
+            <ButtonWithLoading title="Sending Email" />
+          ) : (
+            "Send Email"
+          )}
         </CommonButton>
       </form>
     </div>

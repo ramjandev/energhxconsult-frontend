@@ -1,4 +1,5 @@
 import SectionHeader from "@/common/header/SectionHeader";
+import ButtonWithLoading from "@/common/loading/ButtonWithLoading";
 import { ChevronRight, LucideIcon } from "lucide-react";
 import React from "react";
 import BMiniCard from "../../basic/building/card/BMiniCard";
@@ -16,6 +17,7 @@ interface SimulationModuleCardProps {
   stats: [SimulationStat, SimulationStat, SimulationStat, SimulationStat];
   bgClassName: string;
   onRunSimulation: () => void;
+  isLoading?: boolean;
 }
 
 const SimulationModuleCard: React.FC<SimulationModuleCardProps> = ({
@@ -26,6 +28,7 @@ const SimulationModuleCard: React.FC<SimulationModuleCardProps> = ({
   stats,
   bgClassName,
   onRunSimulation,
+  isLoading,
 }) => {
   return (
     <div
@@ -57,10 +60,21 @@ const SimulationModuleCard: React.FC<SimulationModuleCardProps> = ({
       <button
         type="button"
         onClick={onRunSimulation}
-        className="mt-auto flex items-center justify-center gap-1.5 border border-gray-300 bg-white hover:bg-gray-50 rounded-xl py-3 font-semibold text-foreground transition-colors cursor-pointer"
+        disabled={isLoading}
+        className="mt-auto flex items-center justify-center gap-1.5 border border-gray-300 bg-white hover:bg-gray-50 rounded-xl py-3 font-semibold text-foreground transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
       >
-        Run Simulation
-        <ChevronRight className="w-4 h-4" />
+        {isLoading ? (
+          <ButtonWithLoading
+            title="Processing..."
+            textColor="text-primary!"
+            borderColor="border-primary!"
+          />
+        ) : (
+          <>
+            Run Simulation
+            <ChevronRight className="w-4 h-4" />
+          </>
+        )}
       </button>
     </div>
   );

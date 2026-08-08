@@ -138,7 +138,7 @@ const BiomassSystemDesign: React.FC<BiomassSystemDesignProps> = ({
           />
         </div>
         <Separator />
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between   gap-3 px-6 py-5 ">
+        <div className="flex flex-col   gap-3 px-6 py-5 ">
           <div className="flex gap-6 ">
             <StandardTabs
               tabs={CATEGORY_TABS}

@@ -1,7 +1,7 @@
 import CommonHeader from "./CommonHeader";
 
 interface SectionHeaderProps {
-  title: string;
+  title: string | number;
   description?: string;
   className?: string;
   size?: "md" | "lg" | "xl" | "2xl";

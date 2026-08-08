@@ -25,7 +25,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-white border-2 border-[#F3F4F6] rounded-[14px] p-2 sm:p-6 ${isRow && "flex-row"} flex flex-col  gap-1 sm:gap-3 ${
+      className={`bg-white border-2 border-[#F3F4F6] rounded-[14px] p-4 sm:p-6 ${isRow && "flex-row"} flex flex-col  gap-1 sm:gap-3 ${
         onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""
       } ${className}`}
     >

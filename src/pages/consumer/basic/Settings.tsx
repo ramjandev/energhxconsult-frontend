@@ -15,11 +15,11 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState("commodity");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <SectionHeader title="Settings" />
       <StandardTabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
 
-      <div className="">
+      <div className="w-full">
         {activeTab === "profile" && <ProfileForm />}
         {activeTab === "commodity" && <EnergyCommodityForm />}
 

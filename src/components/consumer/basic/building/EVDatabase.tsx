@@ -4,100 +4,66 @@ import CommonButton from "@/common/button/CommonButton";
 import CommonTabs from "@/common/button/CommonTabs";
 import SearchInput from "@/common/form/SearchInput";
 import SectionHeader from "@/common/header/SectionHeader";
+import useDebounce from "@/common/useDebounce";
+import {
+  useAddEvMutation,
+  useGetEvDatabaseQuery,
+} from "@/store/consumer/basic/ev/EVApi";
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom"; // adjust to your router setup
 import VehicleCard from "./card/VehicleCard";
 
-export interface Vehicle {
-  id: number;
-  brand: string;
-  name: string;
-  battery: string;
-  range: string;
-  charging: string;
-  icon: string;
-}
-
-const VEHICLES: Vehicle[] = [
-  {
-    id: 1,
-    brand: "Tesla",
-    name: "Tesla Model 3",
-    battery: "75 kWh",
-    range: "358 mi",
-    charging: "Level 2/DC",
-    icon: "🚗",
-  },
-  {
-    id: 2,
-    brand: "Tesla",
-    name: "Tesla Model Y",
-    battery: "82 kWh",
-    range: "330 mi",
-    charging: "Level 2/DC",
-    icon: "🚙",
-  },
-  {
-    id: 3,
-    brand: "Nissan",
-    name: "Nissan Leaf",
-    battery: "62 kWh",
-    range: "226 mi",
-    charging: "Level 2",
-    icon: "🚗",
-  },
-  {
-    id: 4,
-    brand: "Chevrolet",
-    name: "Chevrolet Bolt EV",
-    battery: "66 kWh",
-    range: "259 mi",
-    charging: "Level 2/DC",
-    icon: "🚗",
-  },
-  {
-    id: 5,
-    brand: "BMW",
-    name: "BMW i4",
-    battery: "84 kWh",
-    range: "301 mi",
-    charging: "Level 2/DC",
-    icon: "🚗",
-  },
-  {
-    id: 6,
-    brand: "Ford",
-    name: "Ford Mustang Mach-E",
-    battery: "88 kWh",
-    range: "314 mi",
-    charging: "Level 2/DC",
-    icon: "🚙",
-  },
-];
-
-const BRANDS = ["All", "Tesla", "Nissan", "Chevrolet", "BMW", "Ford"];
-
-// ─── EV DATABASE PAGE ─────────────────────────────────────────────────────────
-const BRAND_TABS = BRANDS.map((brand) => ({
-  label: brand,
-  value: brand,
-}));
 const EVDatabase = () => {
-  const [filter, setFilter] = useState("All");
+  const { buildingId } = useParams<{ buildingId: string }>();
+
   const [search, setSearch] = useState("");
-  const [quantities, setQuantities] = useState<Record<number, number>>({
-    1: 1,
+  const debouncedSearch = useDebounce(search, 500);
+  const [filter, setFilter] = useState("all");
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  const { data, isLoading } = useGetEvDatabaseQuery({
+    search: debouncedSearch,
+    manufacturer: filter,
   });
 
-  const visible = VEHICLES.filter(
-    (v) =>
-      (filter === "All" || v.brand === filter) &&
-      v.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const BRAND_TABS =
+    data?.data?.manufacturers?.map((brand) => ({
+      label: brand.name,
+      value: brand.key,
+    })) ?? [];
+
+  const vehicles = data?.data?.vehicles ?? [];
 
   const totalAdded = Object.values(quantities).reduce((a, b) => a + b, 0);
 
-  const setQty = (id: number, value: number) =>
+  const setQty = (id: string, value: number) =>
     setQuantities((q) => ({ ...q, [id]: value }));
+
+  const [addVehicle, { isLoading: isAdding }] = useAddEvMutation();
+  const navigate = useNavigate();
+  const handleAdd = async () => {
+    // if (!buildingId) return;
+
+    const selected = vehicles.filter((v) => (quantities[v.vehicleId] ?? 0) > 0);
+
+    if (selected.length === 0) return;
+
+    try {
+      await Promise.all(
+        selected.map((vehicle) =>
+          addVehicle({
+            ...vehicle.add_vehicle_payload,
+            buildingId: "97bc8736-ccb0-464e-89cb-3fc5290d1d15",
+            noOfEvs: String(quantities[vehicle.vehicleId]),
+          }).unwrap(),
+        ),
+      );
+      setQuantities({});
+      navigate(`../add-ev`);
+    } catch (error) {
+      console.error("Failed to add vehicles:", error);
+    }
+  };
 
   return (
     <div className=" space-y-6">
@@ -124,21 +90,25 @@ const EVDatabase = () => {
           className="flex-wrap gap-2"
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          {visible.map((v) => (
-            <VehicleCard
-              key={v.id}
-              emoji={v.icon}
-              name={v.name}
-              battery={v.battery}
-              range={v.range}
-              charging={v.charging}
-              quantity={quantities[v.id] ?? 0}
-              onQuantityChange={(value) => setQty(v.id, value)}
-              min={0}
-            />
-          ))}
-        </div>
+        {isLoading && <SectionHeader title="Loading vehicles..." />}
+
+        {!isLoading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {vehicles.map((v) => (
+              <VehicleCard
+                key={v.vehicleId}
+                emoji={v.icon}
+                name={v.title}
+                battery={v.battery_capacity_label}
+                range={v.vehicle_range_label}
+                charging={v.charging_level}
+                quantity={quantities[v.vehicleId] ?? 0}
+                onQuantityChange={(value) => setQty(v.vehicleId, value)}
+                min={0}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 pt-1">
@@ -146,7 +116,12 @@ const EVDatabase = () => {
             Upload Custom Appliance
           </CommonButton>
 
-          <CommonButton type="submit">
+          <CommonButton
+            disabled={totalAdded === 0}
+            isLoading={isAdding}
+            loadingText="Processing..."
+            onClick={handleAdd}
+          >
             Save ({totalAdded} vehicles)
           </CommonButton>
         </div>

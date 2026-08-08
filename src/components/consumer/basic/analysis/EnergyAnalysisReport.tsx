@@ -2,8 +2,11 @@ import CommonBorderWrapper from "@/common/button/CommonBorderWrapper";
 import CommonButton from "@/common/button/CommonButton";
 
 import SectionHeader from "@/common/header/SectionHeader";
+import { EnergyAuditResponse } from "@/store/consumer/basic/analysis/types/analysis";
+import { useUpgradeMutation } from "@/store/consumer/basic/building/buildingApi";
 import { DollarSign, Leaf, TrendingUp } from "lucide-react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bar,
   BarChart,
@@ -89,7 +92,24 @@ const analysisCards = [
     des: "tons/year",
   },
 ];
-const EnergyAnalysisReport: React.FC = () => {
+
+interface EnergyAnalysisReportProps {
+  report?: EnergyAuditResponse | null;
+}
+const EnergyAnalysisReport: React.FC<EnergyAnalysisReportProps> = ({
+  report,
+}) => {
+  const [upgrade, { isLoading }] = useUpgradeMutation();
+
+  console.log("EnergyAnalysisReport report:", report); // Debugging line
+
+  const navigate = useNavigate();
+  const handleUpgrade = async () => {
+    try {
+      await upgrade({}).unwrap();
+      navigate("/standard-consumer");
+    } catch (error) {}
+  };
   return (
     <div className="space-y-6">
       <HeaderBanner
@@ -214,7 +234,14 @@ const EnergyAnalysisReport: React.FC = () => {
           className="mb-2"
         />
 
-        <CommonButton>Upgrade Now</CommonButton>
+        <CommonButton
+          onClick={handleUpgrade}
+          disabled={isLoading}
+          isLoading={isLoading}
+          loadingText="Upgrading..."
+        >
+          Upgrade Now
+        </CommonButton>
       </div>
     </div>
   );

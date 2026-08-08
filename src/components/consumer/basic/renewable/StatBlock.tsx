@@ -8,7 +8,7 @@ interface StatBlockProps {
   iconBg?: string;
   iconColor?: string;
   label: string;
-  value: string;
+  value: string | number;
   valueClass?: string;
   sub: string;
   className?: string;
@@ -39,7 +39,7 @@ const StatBlock: React.FC<StatBlockProps> = ({
       <SectionHeader
         title={value}
         description={sub}
-        className="mb-0! flex flex-col items-center justify-center!"
+        className={`mb-0! flex flex-col items-center justify-center! ${valueClass}`}
       />
     </div>
   );

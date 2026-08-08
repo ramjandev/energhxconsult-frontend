@@ -2,6 +2,7 @@ import CommonBorderWrapper from "@/common/button/CommonBorderWrapper";
 import CommonButton from "@/common/button/CommonButton";
 import CommonHeader from "@/common/header/CommonHeader";
 import SectionHeader from "@/common/header/SectionHeader";
+import ButtonWithLoading from "@/common/loading/ButtonWithLoading";
 import {
   Award,
   BadgeCheck,
@@ -30,6 +31,7 @@ interface AssociateCardProps {
   associate: Associate;
   onViewProfile: (id: string) => void;
   onSecondaryAction: (id: string) => void;
+  id: string | undefined;
 }
 
 const initials = (name: string) =>
@@ -43,6 +45,7 @@ const AssociateCard: React.FC<AssociateCardProps> = ({
   associate,
   onViewProfile,
   onSecondaryAction,
+  id,
 }) => {
   const isAssigned = associate.status === "Assigned";
 
@@ -138,7 +141,7 @@ const AssociateCard: React.FC<AssociateCardProps> = ({
       </div>
 
       {/* Actions */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <CommonButton onClick={() => onViewProfile(associate.id)}>
           View Profile
         </CommonButton>
@@ -146,7 +149,17 @@ const AssociateCard: React.FC<AssociateCardProps> = ({
           variant="outline"
           onClick={() => onSecondaryAction(associate.id)}
         >
-          {isAssigned ? "Contact" : "Assign"}
+          {id === associate.id ? (
+            <ButtonWithLoading
+              title="Assigning..."
+              textColor="text-primary!"
+              borderColor="border-primary!"
+            />
+          ) : isAssigned ? (
+            "Contact"
+          ) : (
+            "Assign"
+          )}
         </CommonButton>
       </div>
     </CommonBorderWrapper>

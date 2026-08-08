@@ -15,7 +15,7 @@ const RenewableMicroservices = () => {
           description="After completing your audit, explore our specialized renewable energy solutions tailored to your building's needs"
         />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 ">
         <FeatureCard
           icon={<PiLightningBold className="w-full h-full" />}
           iconBgClassName="bg-[#F59E0B]/10"
@@ -38,7 +38,10 @@ const RenewableMicroservices = () => {
           description="Explore biomass energy solutions for sustainable waste-to-energy conversion"
         />
       </div>
-      <CommonBorderWrapper isShadow>
+      <CommonBorderWrapper
+        isShadow
+        className="flex flex-col gap-1 items-center justify-center space-y-3!"
+      >
         <CommonHeader
           size="sm"
           className="text-[#1C398E]! font-semibold! flex items-center gap-1"
@@ -48,6 +51,7 @@ const RenewableMicroservices = () => {
         </CommonHeader>
 
         <CommonButton
+          disabled
           shape="rounded"
           size="lg"
           className="bg-[#D1D5DC]! text-[#6A7282]! "

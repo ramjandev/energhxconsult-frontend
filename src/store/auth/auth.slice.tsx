@@ -1,16 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { LoginResponse } from "./types/loginUser";
-
+export type UserTypeName = "SERVER" | "DEVELOPER" | "CONSUMER" | "";
 type LocalStorageUser = {
   user: LoginResponse | null;
   token: string | null;
-  userType: "SERVER" | "DEVELOPER" | "CONSUMER";
+  userTypeName: UserTypeName;
 };
 
 const initialState: LocalStorageUser = {
   user: null,
   token: null,
-  userType: "CONSUMER",
+  userTypeName: "",
 };
 
 const authSlice = createSlice({
@@ -28,6 +28,12 @@ const authSlice = createSlice({
       state.token = token;
       state.user = user;
     },
+    setUserTypeName: (state, action) => {
+      state.userTypeName = action.payload;
+    },
+    clearUserTypeName: (state) => {
+      state.userTypeName = "";
+    },
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -35,7 +41,8 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, logout } = authSlice.actions;
+export const { setUser, setUserTypeName, clearUserTypeName, logout } =
+  authSlice.actions;
 
 const authReducer = authSlice.reducer;
 export default authReducer;

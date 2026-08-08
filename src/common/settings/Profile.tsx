@@ -1,8 +1,6 @@
 import camera from "@/assets/images/camera.svg";
 import banner from "@/assets/images/profile-banner.jpeg";
-import UserSignUp from "@/components/user/UserSignUp";
 import { useState } from "react";
-import SignUp from "../password/SignUp";
 
 interface Item {
   id: string;
@@ -82,13 +80,11 @@ const Profile = () => {
               {isLoadingPhoto ? "Updating..." : "Update Photo"}
             </button>
           </div>
-          <div className="">
-            <SignUp />
-          </div>
+          <div className="">{/* <SignUp /> */}</div>
         </>
       ) : (
         <div className="pt-10">
-          <UserSignUp title="Update Profile" />
+          {/* <UserSignUp title="Update Profile" /> */}
         </div>
       )}
     </>

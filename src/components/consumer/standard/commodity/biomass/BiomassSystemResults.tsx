@@ -234,22 +234,22 @@ const BiomassSystemResults: React.FC<SystemResultsProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <BMiniCard
-            className="flex flex-col items-center justify-center bg-[#EAF7E6]/30! "
+            className="flex flex-col items-start justify-center bg-[#EAF7E6]/30! "
             label="Equipment Cost"
             value={`$${equipmentCost.toLocaleString()}`}
           />
           <BMiniCard
-            className="flex flex-col items-center justify-center bg-[#EAF7E6]/30! "
+            className="flex flex-col items-start justify-center bg-[#EAF7E6]/30! "
             label="Installation"
             value={`$${estInstallation.toLocaleString()}`}
           />
           <BMiniCard
-            className="flex flex-col items-center justify-center bg-[#EAF7E6]/30! "
+            className="flex flex-col items-start justify-center bg-[#EAF7E6]/30! "
             label="Total Investment"
             value={`$${totalInvestment.toLocaleString()}`}
           />
           <BMiniCard
-            className="flex flex-col items-center justify-center bg-[#EAF7E6]/30! "
+            className="flex flex-col items-start justify-center bg-[#EAF7E6]/30! "
             label="Payback Period"
             value={`${paybackYears} yrs`}
             valueClass="text-green-600! font-bold!"

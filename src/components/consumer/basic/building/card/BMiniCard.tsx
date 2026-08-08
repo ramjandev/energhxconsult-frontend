@@ -53,12 +53,12 @@ const BMiniCard: React.FC<StatCardProps> = ({
     <div
       className={`${bgClassName} bg-[#EAF7E6]/30 border-[#E5E7EB] rounded-xl p-5 space-y-3 ${className} border `}
     >
-      <div className={`flex items-center gap-2 ${iconClassName}`}>
+      <div className={`flex items-center gap-1 ${iconClassName}`}>
         {Icon && (
           <div
             className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconBgClassName}`}
           >
-            <Icon className={`w-4 h-4 ${iconColorClassName}`} />
+            <Icon className={`w-6 h-6 ${iconColorClassName}`} />
           </div>
         )}
         <CommonHeader size="sm">{label}</CommonHeader>

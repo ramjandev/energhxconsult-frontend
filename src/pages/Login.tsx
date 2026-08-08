@@ -1,4 +1,6 @@
 import CommonButton from "@/common/button/CommonButton";
+import ButtonWithLoading from "@/common/loading/ButtonWithLoading";
+import { getDashboardPath } from "@/help/getDashboardPath";
 import { setUser } from "@/store/auth/auth.slice";
 import { useLoginMutation } from "@/store/auth/authApi";
 import {
@@ -6,13 +8,11 @@ import {
   ServerDeveloperLoginResponse,
 } from "@/store/auth/types/loginUser";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Cookies from "js-cookie";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 export const inputClass = {
@@ -50,32 +50,13 @@ const Login = () => {
       const serverToken = serverUser?.data.token;
       const consumerToken = consumerUser?.data.token;
 
-      Cookies.set("token", result.data.token);
-
       dispatch(
         setUser({
           user: serverUser || consumerUser,
           token: serverToken || consumerToken,
         }),
       );
-
-      switch (result.data.userType) {
-        case "SUPER_ADMIN":
-          navigate("/dashboard");
-          break;
-        case "CONSUMER":
-          navigate("/basic-consumer");
-          break;
-        case "SERVER":
-        case "DEVELOPER":
-          navigate("/user");
-          break;
-        default:
-          console.error("Unhandled userType:", result.data.userType);
-          toast.error(
-            "Unable to determine your account type. Contact support.",
-          );
-      }
+      navigate(getDashboardPath(result));
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -148,12 +129,23 @@ const Login = () => {
 
             <CommonButton
               type="submit"
+              size="lg"
               disabled={isLoading}
-              className="w-full "
+              className="w-full! "
             >
-              {isLoading ? "Logging in..." : "Login"}
+              {isLoading ? (
+                <ButtonWithLoading title="Logging in..." />
+              ) : (
+                "Login"
+              )}
             </CommonButton>
           </form>
+          <p className="text-center text-sm text-primary-gray mt-4">
+            Don&apos;t have an account?{" "}
+            <Link to="/" className="text-primary font-semibold hover:underline">
+              Sign up
+            </Link>
+          </p>
         </div>
       </div>
     </div>

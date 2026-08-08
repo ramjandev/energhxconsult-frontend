@@ -1,61 +1,68 @@
 import CommonBorderWrapper from "@/common/button/CommonBorderWrapper";
 import CommonButton from "@/common/button/CommonButton";
 import CommonHeader from "@/common/header/CommonHeader";
+import { useBuildingDeleteMutation } from "@/store/consumer/basic/building/buildingApi";
+import { UserBuilding } from "@/store/consumer/basic/building/types/building";
 import { Building2, Car, Users, Zap } from "lucide-react";
 import BMiniCard from "./BMiniCard";
 
-export interface BuildingType {
-  id: number;
-  name: string;
-  type: string;
-  subType: string;
-  rooms: number;
-  evs: number;
-  energy: string;
-  buildType: string;
-  info?: string;
-  address?: string;
-}
 interface BuildingCardProps {
-  building: BuildingType;
+  building: UserBuilding;
 }
 const BuildingCard: React.FC<BuildingCardProps> = ({ building }) => {
   const stats = [
     {
       icon: Users,
       label: "Rooms",
-      value: building.rooms,
+      value: building?.card_summary?.rooms ?? 0,
       valueClassName: "text-xl",
     },
-    { icon: Car, label: "EVs", value: building.evs, valueClassName: "text-xl" },
+    {
+      icon: Car,
+      label: "EVs",
+      value: building?.card_summary?.evs ?? 0,
+      valueClassName: "text-xl",
+    },
     {
       icon: Zap,
       label: "Energy Usage",
-      value: building.energy,
+      value: building?.card_summary?.energy_usage ?? 0,
       valueClassName: "text-base",
     },
     {
       icon: Building2,
       label: "Type",
-      value: building.buildType,
+      value: building?.building_type?.name ?? "",
       valueClassName: "text-sm",
     },
   ];
+
+  const [deleteBuilding, { isLoading, originalArgs }] =
+    useBuildingDeleteMutation();
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteBuilding(id).unwrap();
+    } catch (error) {
+      console.error("Failed to delete building:", error);
+    }
+  };
   return (
     <CommonBorderWrapper isShadow>
       <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
         <div>
-          <CommonHeader size="xl">{building.name}</CommonHeader>
+          <CommonHeader size="xl">{building?.building_name}</CommonHeader>
           <CommonHeader size="sm">
             <Building2 className="w-4 h-4" />
-            {building.type} • {building.subType}
+            {building?.building_type?.name} •{" "}
+            {building?.building_sub_type?.name}
           </CommonHeader>
         </div>
 
         <CommonButton
           variant="outline"
           shape="rounded"
-          to={`./building-details/${building.id}`}
+          to={`./building-details/${building.user_building_details_id}`}
           className="w-full sm:w-auto"
         >
           View Details
@@ -68,36 +75,49 @@ const BuildingCard: React.FC<BuildingCardProps> = ({ building }) => {
         ))}
       </div>
 
-      {building.info && (
+      {building?.user_building_utility && (
         <div className="bg-primary-green/5 border border-primary-green/20 text-[#112518] text-sm p-4 rounded-lg ">
-          {building.info}
+          {/* {building.info} */}
+          {building?.user_building_utility?.length} batteries installed
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
-        <CommonButton
-          to="./add-room"
-          showDefaultIcon
-          className="w-full sm:w-auto"
-        >
-          Add Room
-        </CommonButton>
+      <div className="flex flex-col sm:flex-row justify-between gap-2">
+        <div className="flex flex-wrap gap-2 ">
+          <CommonButton
+            to={`./add-room/${building.user_building_details_id}`}
+            showDefaultIcon
+            className="w-full sm:w-auto"
+          >
+            Add Room
+          </CommonButton>
 
-        <CommonButton
-          variant="outline"
-          to="./add-appliance"
-          showDefaultIcon
-          className="w-full sm:w-auto"
-        >
-          Add Appliance
-        </CommonButton>
+          <CommonButton
+            variant="outline"
+            to="./add-appliance"
+            showDefaultIcon
+            className="w-full sm:w-auto"
+          >
+            Add Appliance
+          </CommonButton>
 
+          <CommonButton
+            variant="outline"
+            to="./manage-appliances"
+            className="w-full sm:w-auto"
+          >
+            Manage All Appliances
+          </CommonButton>
+        </div>
         <CommonButton
-          variant="outline"
-          to="./manage-appliances"
-          className="w-full sm:w-auto"
+          isLoading={
+            isLoading && originalArgs === building.user_building_details_id
+          }
+          loadingText="Deleting..."
+          onClick={() => handleDelete(building.user_building_details_id!)}
+          variant="destructive"
         >
-          Manage All Appliances
+          Delete
         </CommonButton>
       </div>
     </CommonBorderWrapper>

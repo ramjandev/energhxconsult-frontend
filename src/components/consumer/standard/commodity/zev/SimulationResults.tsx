@@ -3,6 +3,7 @@ import CommonButton from "@/common/button/CommonButton";
 import SectionHeader from "@/common/header/SectionHeader";
 import BMiniCard from "@/components/consumer/basic/building/card/BMiniCard";
 import BarTooltip from "@/components/consumer/basic/building/management/BarTooltip";
+import { ZevDetails } from "@/store/consumer/standard/Simulations/types/zev/zev";
 import {
   Battery,
   Clock,
@@ -27,55 +28,52 @@ import {
   YAxis,
 } from "recharts";
 
-const VEHICLE_TYPES = [
-  { label: "Sedan", value: "sedan" },
-  { label: "SUV", value: "suv" },
-  { label: "Truck", value: "truck" },
-  { label: "Van", value: "van" },
-];
+interface Props {
+  results: ZevDetails["simulationResults"] | null | undefined;
+  charts: ZevDetails["charts"] | null | undefined;
+  onRunSimulation: () => void;
+  isRunning: boolean;
+}
 
-const CHARGING_METHODS = [
-  { label: "Level 1 (120V)", value: "level1" },
-  { label: "Level 2 (240V)", value: "level2" },
-  { label: "DC Fast Charging", value: "dcfc" },
-];
+const SimulationResults: React.FC<Props> = ({
+  results,
+  charts,
+  onRunSimulation,
+  isRunning,
+}) => {
+  const utilizationData = charts?.chargingStationUtilization
+    ? [
+        {
+          name: `Charging: ${charts.chargingStationUtilization.chargingPercent}%`,
+          value: charts.chargingStationUtilization.chargingPercent,
+          color: "#3b82f6",
+        },
+        {
+          name: `Idle: ${charts.chargingStationUtilization.idlePercent}%`,
+          value: charts.chargingStationUtilization.idlePercent,
+          color: "#10b981",
+        },
+        {
+          name: `Maintenance: ${charts.chargingStationUtilization.maintenancePercent}%`,
+          value: charts.chargingStationUtilization.maintenancePercent,
+          color: "#f59e0b",
+        },
+      ]
+    : [];
 
-const dailyChargingData = [
-  { time: "12AM", power: 7.5, cost: 0.5 },
-  { time: "3AM", power: 7.2, cost: 0.55 },
-  { time: "6AM", power: 7.5, cost: 0.5 },
-  { time: "9AM", power: 0, cost: 0 },
-  { time: "12PM", power: 0, cost: 0 },
-  { time: "3PM", power: 0, cost: 0 },
-  { time: "6PM", power: 3.5, cost: 0.45 },
-  { time: "9PM", power: 7.2, cost: 0.58 },
-];
+  const dailyChargingData = charts?.dailyChargingPattern ?? [];
+  const trendsData = charts?.sixMonthEnergyCostTrends ?? [];
 
-const utilizationData = [
-  { name: "Charging: 65%", value: 65, color: "#3b82f6" },
-  { name: "Idle: 25%", value: 25, color: "#10b981" },
-  { name: "Maintenance: 10%", value: 10, color: "#f59e0b" },
-];
-
-const trendsData = [
-  { month: "Jan", energy: 450, cost: 65 },
-  { month: "Feb", energy: 430, cost: 62 },
-  { month: "Mar", energy: 460, cost: 68 },
-  { month: "Apr", energy: 445, cost: 64 },
-  { month: "May", energy: 455, cost: 67 },
-  { month: "Jun", energy: 465, cost: 70 },
-];
-const SimulationResults = () => {
-  const handleRunSimulation = () => {
-    console.log("Run simulation");
-    // TODO: trigger simulation API call
-  };
   return (
     <CommonBorderWrapper isShadow>
       <div className="flex sm:items-center justify-between flex-col sm:flex-row gap-3 ">
         <SectionHeader size="xl" title="Simulation Results" />
-        <CommonButton onClick={handleRunSimulation}>
-          <Play className="w-4 h-4 mr-1.5" />
+        <CommonButton
+          onClick={onRunSimulation}
+          isLoading={isRunning}
+          loadingText="Running..."
+        >
+          <Play />
           Run Simulation
         </CommonButton>
       </div>
@@ -85,15 +83,15 @@ const SimulationResults = () => {
           icon={DollarSign}
           iconColorClassName="text-blue-600"
           label="Charging Cost"
-          value="$2.43"
-          des="$72.90/month"
+          value={results ? `$${results.chargingCost}` : "--"}
+          des={results ? `$${results.monthlyChargingCost}/month` : "--"}
           bgClassName="bg-blue-50"
         />
         <BMiniCard
           icon={Zap}
           iconColorClassName="text-green-600"
           label="Energy Demand"
-          value="16.2"
+          value={results ? `${results.energyDemandKwhPerDay}` : "--"}
           des="kWh/day"
           bgClassName="bg-green-50"
         />
@@ -101,15 +99,19 @@ const SimulationResults = () => {
           icon={Clock}
           iconColorClassName="text-amber-500"
           label="Vehicle Uptime"
-          value="96%"
-          des="23 hrs/day"
+          value={results ? `${results.vehicleUptimePercent}%` : "--"}
+          des={
+            results
+              ? `${((results.vehicleUptimePercent / 100) * 24).toFixed(0)} hrs/day`
+              : "--"
+          }
           bgClassName="bg-amber-50"
         />
         <BMiniCard
           icon={Battery}
           iconColorClassName="text-purple-600"
           label="Battery Utilization"
-          value="68%"
+          value={results ? `${results.batteryUtilizationPercent}%` : "--"}
           des="Average SOC"
           bgClassName="bg-purple-50"
         />
@@ -117,7 +119,7 @@ const SimulationResults = () => {
           icon={TrendingUp}
           iconColorClassName="text-green-600"
           label="Annual Savings"
-          value="$1,850"
+          value={results ? `$${results.annualSavings}` : "--"}
           valueClass="text-green-600"
           des="vs. gas vehicle"
           bgClassName="bg-green-50"

@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import React from "react";
 import { FaRegEdit } from "react-icons/fa";
 
@@ -6,6 +6,7 @@ interface ActionButtonProps {
   type: "edit" | "delete";
   onClick?: () => void;
   className?: string;
+  isLoading?: boolean;
 }
 
 const ACTION_CONFIG = {
@@ -25,6 +26,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   type,
   onClick,
   className,
+  isLoading = false,
 }) => {
   const { icon: Icon, color, label } = ACTION_CONFIG[type];
 
@@ -32,10 +34,15 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`${color} cursor-pointer transition-colors ${className ?? ""}`}
+      disabled={isLoading}
+      className={`${color} cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className ?? ""}`}
       aria-label={`${label} room`}
     >
-      <Icon className="w-5 h-5" />
+      {isLoading ? (
+        <Loader2 className="w-5 h-5 animate-spin" />
+      ) : (
+        <Icon className="w-5 h-5" />
+      )}
     </button>
   );
 };

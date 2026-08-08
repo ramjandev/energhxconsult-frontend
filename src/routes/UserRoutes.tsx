@@ -1,16 +1,20 @@
 import AllCourses from "@/common/LMS/AllCourses";
 import Settings from "@/common/Settings";
-import ServerDeveloperSignUp from "@/components/user/ServerDeveloperSignUp";
-import WorkExperience from "@/components/user/WorkExperience";
+import WorkExperience from "@/components/register/WorkExperience";
 import ServerLayout from "@/Layout/ServerLayout";
 import AllProgram from "@/pages/user/AllProgram";
 import ServerDashBoard from "@/pages/user/ServerDashBoard";
+import ProtectedRoute from "./ProtectedRoute";
 
 const userRoutes = {
   path: "user",
-  element: <ServerLayout />,
+  element: (
+    <ProtectedRoute allowedRoles={["SERVER", "DEVELOPER"]}>
+      <ServerLayout />
+    </ProtectedRoute>
+  ),
   children: [
-    { path: "", element: <ServerDashBoard /> },
+    { index: true, element: <ServerDashBoard /> },
     { path: "dashboard", element: <ServerDashBoard /> },
     { path: "all-courses", element: <AllCourses /> },
     { path: "settings", element: <Settings /> },
@@ -21,10 +25,6 @@ const userRoutes = {
     {
       path: "experience",
       element: <WorkExperience />,
-    },
-    {
-      path: "signup",
-      element: <ServerDeveloperSignUp />,
     },
   ],
 };

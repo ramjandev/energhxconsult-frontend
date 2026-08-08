@@ -29,10 +29,9 @@ import { GrServices, GrValidate } from "react-icons/gr";
 import { HiOutlineClipboardDocumentList } from "react-icons/hi2";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { LiaUsersSolid } from "react-icons/lia";
-import { PiLightningBold } from "react-icons/pi";
+import { PiCodesandboxLogo, PiLightningBold } from "react-icons/pi";
 import { RiBattery2ChargeFill, RiContactsFill } from "react-icons/ri";
 import { SiCountingworkspro } from "react-icons/si";
-
 export const standardConsumerMenu: MenuItem[] = [
   {
     path: "/standard-consumer/dashboard",
@@ -144,7 +143,7 @@ export const standardConsumerMenu: MenuItem[] = [
       {
         path: "/standard-consumer/commodity-contract",
         label: "Commodity Contract",
-        icon: SiCountingworkspro,
+        icon: PiCodesandboxLogo,
       },
       {
         path: "/standard-consumer/checkout-report",

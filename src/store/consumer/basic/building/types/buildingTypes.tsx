@@ -19,7 +19,6 @@ export interface GetAllBuildingTypesResponse {
   data: BuildingType[];
 }
 
-// ADD — for the single building endpoint
 export interface GetSingleBuildingTypeResponse {
   status: number;
   message: string;

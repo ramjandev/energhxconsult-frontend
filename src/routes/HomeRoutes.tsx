@@ -1,8 +1,8 @@
 import Cancel from "@/common/LMS/Cancel";
 import Success from "@/common/LMS/Success";
+import CreatePassword from "@/common/password/CreatePassword";
 import ForgotPassword from "@/common/password/ForgotPassword";
-import SignUp from "@/common/password/SignUp";
-import ServerDeveloperSignUp from "@/components/user/ServerDeveloperSignUp";
+import Register from "@/components/register/Register";
 import Login from "@/pages/Login";
 import AboutUs from "@/pages/wordpress/about/AboutUs";
 import Consulting from "@/pages/wordpress/consulting/Consulting";
@@ -13,6 +13,7 @@ import Research from "@/pages/wordpress/research/Research";
 import ResearchDetails from "@/pages/wordpress/research/ResearchDetails";
 import App from "../App";
 import Home from "../pages/Home";
+import GuestRoute from "./GuestRoute";
 
 const homeRoutes = {
   path: "/",
@@ -20,15 +21,11 @@ const homeRoutes = {
   children: [
     {
       path: "/",
-      element: <Home />,
-    },
-    {
-      path: "consumer",
-      element: <SignUp />,
-    },
-    {
-      path: "server-developer",
-      element: <ServerDeveloperSignUp />,
+      element: (
+        <GuestRoute>
+          <Home />
+        </GuestRoute>
+      ),
     },
 
     {
@@ -61,12 +58,29 @@ const homeRoutes = {
     },
 
     {
+      path: "/create-password",
+      element: <CreatePassword />,
+    },
+
+    {
       path: "/forgot-password",
       element: <ForgotPassword />,
     },
     {
+      path: "register",
+      element: (
+        <GuestRoute>
+          <Register />
+        </GuestRoute>
+      ),
+    },
+    {
       path: "/login",
-      element: <Login />,
+      element: (
+        <GuestRoute>
+          <Login />
+        </GuestRoute>
+      ),
     },
     {
       path: "/payment/success",

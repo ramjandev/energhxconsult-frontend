@@ -7,7 +7,7 @@ interface ApplianceCardProps {
   emoji?: string;
   name: string;
   category: string;
-  power: string;
+  power: number;
   quantity: number;
   onQuantityChange: (value: number) => void;
   min?: number;
@@ -36,7 +36,7 @@ const ApplianceCard: React.FC<ApplianceCardProps> = ({
       <CommonHeader className="font-bold! ">{name}</CommonHeader>
 
       <CommonHeader size="sm">{category}</CommonHeader>
-      <CommonHeader size="sm">Power: {power}</CommonHeader>
+      <CommonHeader size="sm">Power: {power}W</CommonHeader>
 
       {isAdded ? (
         <Counter

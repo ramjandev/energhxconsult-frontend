@@ -20,11 +20,17 @@ import ThermalComfortSimulation from "@/pages/consumer/standard/ThermalComfortSi
 import WindEnergy from "@/pages/consumer/standard/WindEnergy";
 import ZeroEmissionVehicle from "@/pages/consumer/standard/ZeroEmissionVehicle";
 import ProjectProposalContract from "./ProjectProposalContract";
+import ProtectedRoute from "./ProtectedRoute";
 
 const standardConsumerRoutes = {
   path: "standard-consumer",
-  element: <LayoutStandardConsumer />,
+  element: (
+    <ProtectedRoute allowedRoles={["CONSUMER"]}>
+      <LayoutStandardConsumer />
+    </ProtectedRoute>
+  ),
   children: [
+    { index: true, element: <SDashboard /> },
     { path: "dashboard", element: <SDashboard /> },
 
     // Energy Commodity Setup

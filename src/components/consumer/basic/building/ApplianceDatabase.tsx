@@ -4,90 +4,69 @@ import CommonButton from "@/common/button/CommonButton";
 import CommonTabs from "@/common/button/CommonTabs";
 import SearchInput from "@/common/form/SearchInput";
 import SectionHeader from "@/common/header/SectionHeader";
+import {
+  useAddApplianceMutation,
+  useGetApplianceCategoryQuery,
+} from "@/store/consumer/basic/appliance/applianceApi";
 import { useState } from "react";
+import { useParams } from "react-router-dom"; // adjust to your router setup
 import ApplianceCard from "./card/ApplianceCard";
 
-export interface Appliance {
-  id: number;
-  name: string;
-  category: string;
-  power: string;
-  icon: string;
-}
-
-const APPLIANCES: Appliance[] = [
-  {
-    id: 1,
-    name: "Refrigerator",
-    category: "Kitchen",
-    power: "150W",
-    icon: "🧊",
-  },
-  { id: 2, name: "Microwave", category: "Kitchen", power: "1200W", icon: "📦" },
-  {
-    id: 3,
-    name: "Dishwasher",
-    category: "Kitchen",
-    power: "1800W",
-    icon: "🍽️",
-  },
-  {
-    id: 4,
-    name: "Air Conditioner",
-    category: "Cooling",
-    power: "3500W",
-    icon: "❄️",
-  },
-  { id: 5, name: "Ceiling Fan", category: "Cooling", power: "75W", icon: "💨" },
-  {
-    id: 6,
-    name: "Washing Machine",
-    category: "Laundry",
-    power: "500W",
-    icon: "🫧",
-  },
-  { id: 7, name: "Dryer", category: "Laundry", power: "3000W", icon: "🔥" },
-  { id: 8, name: "LED Bulb", category: "Lighting", power: "10W", icon: "💡" },
-  {
-    id: 9,
-    name: 'TV 55"',
-    category: "Entertainment",
-    power: "120W",
-    icon: "📺",
-  },
-  { id: 10, name: "Laptop", category: "Office", power: "65W", icon: "💻" },
-];
-
-const CATEGORIES = [
-  "All",
-  "Kitchen",
-  "Cooling",
-  "Laundry",
-  "Lighting",
-  "Entertainment",
-  "Office",
-];
-
-const CATEGORY_TABS = CATEGORIES.map((category) => ({
-  label: category,
-  value: category,
-}));
-
 const ApplianceDatabase = () => {
-  const [filter, setFilter] = useState("All");
-  const [search, setSearch] = useState("");
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const { roomId } = useParams<{ roomId: string }>();
 
-  const visible = APPLIANCES.filter(
-    (a) =>
-      (filter === "All" || a.category === filter) &&
-      a.name.toLowerCase().includes(search.toLowerCase()),
+  const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  const { data, isLoading } = useGetApplianceCategoryQuery(
+    { category: filter },
+    { skip: !filter, refetchOnMountOrArgChange: true },
   );
+
+  const categories = data?.data?.categories ?? [];
+  const appliances = data?.data?.appliances ?? [];
+
+  const CATEGORY_TABS = categories.map((category) => ({
+    label: category.name,
+    value: category.key,
+  }));
 
   const totalAdded = Object.values(quantities).reduce((a, b) => a + b, 0);
 
-  const setQty = (id: number, value: number) =>
+  const setQty = (id: string, value: number) =>
     setQuantities((q) => ({ ...q, [id]: value }));
+
+  const [addAppliance, { isLoading: isAdding }] = useAddApplianceMutation();
+
+  const handleAdd = async () => {
+    // if (!roomId) return;
+
+    const selected = appliances.filter(
+      (a) => (quantities[a.applianceId] ?? 0) > 0,
+    );
+
+    if (selected.length === 0) return;
+
+    try {
+      await Promise.all(
+        selected.map((appliance) =>
+          addAppliance({
+            typeId: appliance.typeId,
+            applianceId: appliance.applianceId,
+            powerRating: appliance.powerRating,
+            noOfAppliances: String(quantities[appliance.applianceId]),
+            latentHeat: appliance.latentHeat,
+            sensibleHeat: appliance.sensibleHeat,
+            roomId: "b3ba1108-89ce-428d-937f-a856a28bd129",
+          }).unwrap(),
+        ),
+      );
+      setQuantities({});
+    } catch (error) {
+      console.error("Failed to add appliances:", error);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -111,29 +90,36 @@ const ApplianceDatabase = () => {
           className="flex-wrap gap-2"
         />
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          {visible.map((a) => (
-            <ApplianceCard
-              key={a.id}
-              emoji={a.icon}
-              name={a.name}
-              category={a.category}
-              power={a.power}
-              quantity={quantities[a.id] ?? 0}
-              onQuantityChange={(value) => setQty(a.id, value)}
-              min={0}
-            />
-          ))}
-        </div>
+        {isLoading && <SectionHeader title="Loading appliances..." />}
 
-        {/* Actions */}
+        {!isLoading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {appliances.map((a) => (
+              <ApplianceCard
+                key={a.applianceId}
+                emoji={a.image_url ?? ""}
+                name={a.name}
+                category={a.category.name}
+                power={Number(a.powerRating)}
+                quantity={quantities[a.applianceId] ?? 0}
+                onQuantityChange={(value) => setQty(a.applianceId, value)}
+                min={Number(a.min_consumption)}
+              />
+            ))}
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row gap-3 pt-1">
           <CommonButton variant="outline" to="../custom-appliance">
             Upload Custom Appliance
           </CommonButton>
 
-          <CommonButton type="submit">
+          <CommonButton
+            disabled={totalAdded === 0}
+            isLoading={isAdding}
+            loadingText="Processing..."
+            onClick={handleAdd}
+          >
             Save ({totalAdded} appliances)
           </CommonButton>
         </div>

@@ -1,53 +1,80 @@
 import ActionButton from "@/common/button/ActionButton";
 import CommonButton from "@/common/button/CommonButton";
+import Modal from "@/common/form/Modal";
 import CommonHeader from "@/common/header/CommonHeader";
-import React from "react";
+import { Room } from "@/store/consumer/basic/building/types/building";
+import { useDeleteRoomMutation } from "@/store/consumer/basic/room/roomApi";
+import React, { useState } from "react";
+import AddRoom from "./AddRoom";
 
 interface RoomCardProps {
-  room: {
-    id: number;
-    name: string;
-    type: string;
-    appliances: number;
-    usage: string;
-  };
+  room: Room;
 }
 const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
+  const applianceCount =
+    room.windows.length +
+    room.lightBulbs.length +
+    room.Acs.length +
+    room.otherAppliances.length;
+
+  const [deleteRoom, { isLoading, originalArgs }] = useDeleteRoomMutation();
+
+  const handleDelete = async (room_id: string, building_id: string) => {
+    try {
+      await deleteRoom({ room_id, building_id }).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [isRoomEdit, setIsRoomEdit] = useState(false);
+
   return (
-    <div className="bg-[#EAF7E6]/30 rounded-xl p-4 border border-[#E7E9E8]">
-      <div className="flex items-start justify-between space-y-3 ">
-        <div className="space-y-3">
-          <div>
-            <CommonHeader className="font-bold!">{room.name}</CommonHeader>
-            <CommonHeader size="sm">{room.type}</CommonHeader>
+    <div>
+      <div className="bg-[#EAF7E6]/30 rounded-xl p-4 border border-[#E7E9E8]">
+        <div className="flex items-start justify-between space-y-3 ">
+          <div className="space-y-3">
+            <div>
+              <CommonHeader className="font-bold!">{room.title}</CommonHeader>
+              <CommonHeader size="sm">{room.activity_type}</CommonHeader>
+            </div>
+            <div>
+              <CommonHeader size="sm">Appliances</CommonHeader>
+              <CommonHeader size="md" className="font-bold! text-[#112518]!">
+                {applianceCount}
+              </CommonHeader>
+            </div>
           </div>
-          <div>
-            <CommonHeader size="sm">Appliances</CommonHeader>
+          <div className="  self-end">
+            <CommonHeader size="sm">Estimated Usage</CommonHeader>
             <CommonHeader size="md" className="font-bold! text-[#112518]!">
-              {room.appliances}
+              {room.floor_area} m²
             </CommonHeader>
           </div>
+          <div className="flex items-center gap-2 ">
+            <ActionButton onClick={() => setIsRoomEdit(true)} type="edit" />
+            <ActionButton
+              type="delete"
+              isLoading={isLoading && originalArgs?.room_id === room.id}
+              onClick={() =>
+                handleDelete(room.id, room.user_building_details_id)
+              }
+            />
+          </div>
         </div>
-        <div className="  self-end">
-          <CommonHeader size="sm">Estimated Usage</CommonHeader>
-          <CommonHeader size="md" className="font-bold! text-[#112518]!">
-            {room.usage}
-          </CommonHeader>
-        </div>
-        <div className="flex items-center gap-2 ">
-          <ActionButton type="edit" />
-          <ActionButton type="delete" />
-        </div>
-      </div>
 
-      <CommonButton
-        size="sm"
-        to="../add-appliance"
-        showDefaultIcon
-        className="w-full"
-      >
-        Add Appliances
-      </CommonButton>
+        <CommonButton
+          size="sm"
+          to="../add-appliance"
+          showDefaultIcon
+          className="w-full"
+        >
+          Add Appliances
+        </CommonButton>
+      </div>
+      <Modal isOpen={isRoomEdit} onClose={() => setIsRoomEdit(false)}>
+        <AddRoom room={room} onClose={() => setIsRoomEdit(false)} />
+      </Modal>
     </div>
   );
 };

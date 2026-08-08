@@ -2,7 +2,6 @@ import Logo from "@/assets/images/logo.svg";
 import userImg from "@/assets/images/user.png";
 import CommonWrapper from "@/common/CommonWrapper";
 import DropDown from "@/common/DropDown";
-import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 export interface NavbarUserProps {
@@ -14,31 +13,6 @@ interface NavbarAdminProps {
   user: NavbarUserProps;
 }
 const NavbarAdmin = ({ user }: NavbarAdminProps) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    }
-
-    if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isDropdownOpen]);
-
   return (
     <>
       <nav
@@ -51,23 +25,18 @@ const NavbarAdmin = ({ user }: NavbarAdminProps) => {
               <img src={Logo} alt="Logo" className="h-8 w-[120px]" />
             </Link>
 
-            <div ref={dropdownRef} className="">
-              <div
-                onClick={() => setIsDropdownOpen((pre) => !pre)}
-                className="flex gap-2 relative"
-              >
+            <div className="">
+              <div className="flex gap-2 relative">
                 <div>
-                  <img
-                    src={user.profileImg || userImg}
-                    alt="User"
-                    className="w-12 h-12 ring-2 ring-primary rounded-full cursor-pointer"
+                  <DropDown
+                    trigger={
+                      <img
+                        src={user.profileImg || userImg}
+                        alt="User"
+                        className="w-12 h-12 ring-2 ring-primary rounded-full cursor-pointer"
+                      />
+                    }
                   />
-
-                  {isDropdownOpen && (
-                    <div id="dropdown" className="absolute left-0 mt-2">
-                      <DropDown />
-                    </div>
-                  )}
                 </div>
                 <div className="hidden sm:block">
                   <h2 className="text-[#112518] text-base ">{user.name}</h2>

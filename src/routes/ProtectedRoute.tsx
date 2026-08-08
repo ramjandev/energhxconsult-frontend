@@ -24,7 +24,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   useEffect(() => {
     if (!token) {
-      navigate("/admin-login");
+      navigate("/login");
       return;
     }
 
@@ -40,14 +40,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
 
     // Role-based restriction for others
-    if (
-      allowedRoles &&
-      allowedRoles.length > 0 &&
-      !role?.some((role) => allowedRoles.includes(role))
-    ) {
-      navigate("/admin-login");
-      return;
-    }
+    // if (
+    //   allowedRoles &&
+    //   allowedRoles.length > 0 &&
+    //   !role?.some((role) => allowedRoles.includes(role))
+    // ) {
+    //   navigate("/login");
+    //   return;
+    // }
   }, [token, user, allowedRoles, navigate]);
 
   return <>{children}</>;

@@ -16,18 +16,21 @@ import Quiz from "@/dashboard/pages/Quiz";
 import Review from "@/dashboard/pages/Review";
 import Users from "@/dashboard/pages/Users";
 import AdminLayout from "@/Layout/AdminLayout";
-import AdminProtectedRoute from "./AdminProtectedRoute";
+import ProtectedRoute from "./ProtectedRoute";
 
 const dashboardRoutes = {
   path: "/dashboard",
   element: (
-    <AdminProtectedRoute>
+    <ProtectedRoute allowedRoles={["SUPER_ADMIN"]}>
       <AdminLayout />
-    </AdminProtectedRoute>
+    </ProtectedRoute>
   ),
   children: [
     {
       index: true,
+      element: <DasHome />,
+    },
+    {
       path: "home",
       element: <DasHome />,
     },

@@ -4,6 +4,7 @@ import { useState } from "react";
 
 const AssignedAssociates = () => {
   const [isAssociateOpen, setIsAssociateOpen] = useState(false);
+
   return (
     <div>
       {!isAssociateOpen ? (
