@@ -37,10 +37,19 @@ const basicConsumerRoutes = {
         { path: "create-building", element: <CreateBuilding /> },
         { path: "building-details/:id", element: <BuildingDetails /> },
         { path: "add-room/:id", element: <AddRoom /> },
-        { path: "add-appliance", element: <ApplianceDatabase /> },
-        { path: "custom-appliance", element: <CustomAppliance /> },
-        { path: "add-ev", element: <EVManagement /> },
-        { path: "add-ev-database", element: <EVDatabase /> },
+        {
+          path: "add-appliance/:buildingId/:roomId",
+          element: <ApplianceDatabase />,
+        },
+        {
+          path: "custom-appliance/:buildingId/:roomId",
+          element: <CustomAppliance />,
+        },
+        { path: "add-ev/:buildingId/:roomId", element: <EVManagement /> },
+        {
+          path: "add-ev-database/:buildingId/:roomId",
+          element: <EVDatabase />,
+        },
         { path: "manage-appliances", element: <AppliancesManagement /> },
       ],
     },

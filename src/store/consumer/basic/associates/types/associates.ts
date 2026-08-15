@@ -50,4 +50,5 @@ export interface GetAssociatesParams {
   type?: AssociateType;
   page?: number;
   limit?: number;
+  search?: string;
 }

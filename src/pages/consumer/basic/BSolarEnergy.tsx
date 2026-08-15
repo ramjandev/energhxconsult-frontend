@@ -7,14 +7,14 @@ import {
   defaultSolarValues,
   solarFormSchema,
   SolarFormValues,
-} from "@/components/consumer/basic/renewable/schema/solarPanelSchema"; // adjust path to wherever you place the schema
+} from "@/components/consumer/basic/renewable/schema/solarPanelSchema";
 import SelectableOptionCard from "@/components/consumer/basic/renewable/SelectableOptionCard";
 import SpecRow from "@/components/consumer/basic/renewable/SpecRow";
 import StatBlock from "@/components/consumer/basic/renewable/StatBlock";
 import { useCalculateSolarMutation } from "@/store/consumer/basic/renewables/renewableEnergyAPI";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import DashboardCardSkeleton from "@/common/loading/DashboardCardSkeleton";
@@ -46,13 +46,15 @@ const BSolarEnergy = () => {
   });
 
   const [calculateSolar, { data, isLoading }] = useCalculateSolarMutation();
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
+  const [interested, setInterested] = useState<"yes" | "no" | null>(null);
 
-  useEffect(() => {
+  const handleAnalysisClick = async () => {
     const parsed = solarFormSchema.safeParse(getValues());
     if (!parsed.success) return;
-    const payload = parsed.data;
-    calculateSolar(payload);
-  }, []);
+    await calculateSolar(parsed.data);
+    setHasAnalyzed(true);
+  };
 
   const onSubmit = (values: SolarFormValues) => {
     if (!values) return;
@@ -61,7 +63,7 @@ const BSolarEnergy = () => {
   const summary = data?.data.summary;
   const impact = data?.data.environmental_impact;
   const site = data?.data.site_suitability;
-  const [interested, setInterested] = useState<"yes" | "no" | null>(null);
+
   return (
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
       <IconSectionHeader
@@ -120,7 +122,6 @@ const BSolarEnergy = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CommonBorderWrapper isShadow>
           <SectionHeader size="xl" title="System Specifications" />
-
           <div>
             <SpecRow label="Panel Type" value="Monocrystalline" />
             <SpecRow label="Panel Wattage" value="400 W" />
@@ -133,7 +134,6 @@ const BSolarEnergy = () => {
 
         <CommonBorderWrapper isShadow>
           <SectionHeader size="xl" title="Site Conditions" />
-
           <div>
             <SpecRow label="Daily Irradiance" value="4.4 kWh/m²/day" />
             <SpecRow label="Azimuth" value="180°" />
@@ -145,7 +145,6 @@ const BSolarEnergy = () => {
 
         <CommonBorderWrapper isShadow>
           <SectionHeader size="xl" title="Demand & Grid" />
-
           <div>
             <SpecRow label="Annual Load" value="14,650 kWh" />
             <SpecRow
@@ -158,7 +157,6 @@ const BSolarEnergy = () => {
 
         <CommonBorderWrapper isShadow>
           <SectionHeader size="xl" title="Financial Breakdown" />
-
           <div>
             <SpecRow label="System Cost" value="$18,500" />
             <SpecRow
@@ -223,13 +221,11 @@ const BSolarEnergy = () => {
             }
             percentage={site ? site.roof_orientation.score_pct : 0}
           />
-
           <ProgressStat
             label="Solar Irradiance"
             status={site ? site.solar_irradiance.rating : "Very Good"}
             percentage={site ? site.solar_irradiance.score_pct : 0}
           />
-
           <ProgressStat
             label="Shading Analysis"
             status={site ? site.shading_analysis.rating : "Minimal Shading"}
@@ -242,7 +238,6 @@ const BSolarEnergy = () => {
           size="lg"
           title="Are you interested in biomass energy?"
         />
-
         <div className="flex flex-col sm:flex-row gap-4">
           <SelectableOptionCard
             icon={Check}
@@ -251,7 +246,6 @@ const BSolarEnergy = () => {
             selected={interested === "yes"}
             onClick={() => setInterested("yes")}
           />
-
           <SelectableOptionCard
             icon={X}
             title="No, not at this time"
@@ -262,10 +256,19 @@ const BSolarEnergy = () => {
           />
         </div>
       </CommonBorderWrapper>
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-3">
+        {!hasAnalyzed && (
+          <CommonButton
+            onClick={handleAnalysisClick}
+            isLoading={isLoading}
+            loadingText="Analyzing..."
+          >
+            Analysis
+          </CommonButton>
+        )}
         <CommonButton
           type="submit"
-          disabled={!interested || isLoading}
+          disabled={!hasAnalyzed || isLoading || !interested}
           to="../wind-energy"
         >
           Save with Next

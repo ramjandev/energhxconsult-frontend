@@ -94,15 +94,6 @@ const BuildingCard: React.FC<BuildingCardProps> = ({ building }) => {
 
           <CommonButton
             variant="outline"
-            to="./add-appliance"
-            showDefaultIcon
-            className="w-full sm:w-auto"
-          >
-            Add Appliance
-          </CommonButton>
-
-          <CommonButton
-            variant="outline"
             to="./manage-appliances"
             className="w-full sm:w-auto"
           >

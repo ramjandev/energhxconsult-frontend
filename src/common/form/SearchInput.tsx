@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import React from "react";
 
 interface SearchInputProps {
@@ -6,6 +6,7 @@ interface SearchInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  isFetching?: boolean;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
@@ -13,12 +14,20 @@ const SearchInput: React.FC<SearchInputProps> = ({
   onChange,
   placeholder = "Search...",
   className,
+  isFetching = false,
 }) => {
   return (
     <div
       className={`flex items-center gap-3 bg-[#F9F9F9] border border-[#E7E9E8] rounded-md px-5 py-3 ${className ?? ""}`}
     >
-      <Search className="w-4 h-4 text-gray-400 shrink-0" />
+      {isFetching ? (
+        <Loader2
+          className="w-4 h-4 text-gray-400 shrink-0 animate-spin"
+          aria-hidden="true"
+        />
+      ) : (
+        <Search className="w-4 h-4 text-gray-400 shrink-0" />
+      )}
       <input
         type="text"
         value={value}
@@ -26,6 +35,9 @@ const SearchInput: React.FC<SearchInputProps> = ({
         placeholder={placeholder}
         className="w-full bg-transparent outline-none text-sm text-foreground placeholder:text-gray-400"
       />
+      <span className="sr-only" role="status" aria-live="polite">
+        {isFetching ? "Searching" : ""}
+      </span>
     </div>
   );
 };

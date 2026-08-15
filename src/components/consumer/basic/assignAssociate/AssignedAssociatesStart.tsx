@@ -1,5 +1,7 @@
 import CommonButton from "@/common/button/CommonButton";
 import SectionHeader from "@/common/header/SectionHeader";
+import EmptyState from "@/common/loading/EmptyState";
+import Spinner from "@/common/loading/Spinner";
 import { useGetAssociatesQuery } from "@/store/consumer/basic/associates/associatesApi";
 
 interface AssignedAssociatesStartProps {
@@ -13,7 +15,6 @@ const AssignedAssociatesStart: React.FC<AssignedAssociatesStartProps> = ({
   setIsAssociateOpen,
 }) => {
   const { data, isLoading } = useGetAssociatesQuery({
-    type: "server",
     page: 1,
     limit: 10,
   });
@@ -36,9 +37,9 @@ const AssignedAssociatesStart: React.FC<AssignedAssociatesStartProps> = ({
         </CommonButton>
       </div>
 
-      {isLoading && <SectionHeader title="Loading associates..." />}
-
-      {!isLoading && (
+      {isLoading ? (
+        <Spinner text="Loading associates..." size="xl" />
+      ) : associates.length > 0 ? (
         <div className="flex flex-col gap-4">
           {associates.map((associate) => (
             <div
@@ -64,6 +65,8 @@ const AssignedAssociatesStart: React.FC<AssignedAssociatesStartProps> = ({
             </div>
           ))}
         </div>
+      ) : (
+        <EmptyState message="No associates assigned yet." />
       )}
     </div>
   );

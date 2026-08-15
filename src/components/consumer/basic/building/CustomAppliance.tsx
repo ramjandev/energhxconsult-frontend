@@ -5,12 +5,9 @@ import SectionHeader from "@/common/header/SectionHeader";
 import { inputClass } from "@/pages/Login";
 import { useAddCustomApplianceMutation } from "@/store/consumer/basic/appliance/applianceApi";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // adjust to your router setup
+import { useNavigate, useParams } from "react-router-dom"; // adjust to your router setup
 import { z } from "zod";
 import ImageDropzone from "./ImageDropzone";
-
-// TODO: replace with the real building ID from route/context once available
-const STATIC_BUILDING_ID = "97bc8736-ccb0-464e-89cb-3fc5290d1d15";
 
 const customApplianceSchema = z.object({
   applianceName: z.string().trim().min(1, "Appliance name is required"),
@@ -54,6 +51,10 @@ const INITIAL_FORM: CustomApplianceForm = {
 };
 
 const CustomAppliance = () => {
+  const { buildingId, roomId } = useParams<{
+    buildingId: string;
+    roomId: string;
+  }>();
   const navigate = useNavigate();
 
   const [addCustomAppliance, { isLoading }] = useAddCustomApplianceMutation();
@@ -86,6 +87,10 @@ const CustomAppliance = () => {
     };
 
   const handleSubmit = async () => {
+    if (!buildingId || !roomId) {
+      setSubmitError("Building ID or Room ID is missing.");
+      return;
+    }
     setSubmitError(null);
 
     const result = customApplianceSchema.safeParse(form);
@@ -103,7 +108,8 @@ const CustomAppliance = () => {
     setErrors({});
 
     const formData = new FormData();
-    formData.append("buildingId", STATIC_BUILDING_ID);
+    formData.append("buildingId", buildingId);
+    formData.append("roomId", roomId);
     formData.append("applianceName", result.data.applianceName);
     formData.append("brandName", result.data.brandName);
     formData.append("categoryName", result.data.categoryName);

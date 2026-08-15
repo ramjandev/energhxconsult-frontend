@@ -62,15 +62,24 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
             />
           </div>
         </div>
-
-        <CommonButton
-          size="sm"
-          to="../add-appliance"
-          showDefaultIcon
-          className="w-full"
-        >
-          Add Appliances
-        </CommonButton>
+        <div className="flex flex-col sm:flex-row  gap-2 mt-3">
+          <CommonButton
+            size="sm"
+            to={`../add-appliance/${room.user_building_details_id}/${room.id}`}
+            showDefaultIcon
+            className="w-full"
+          >
+            Add Appliances
+          </CommonButton>
+          <CommonButton
+            size="sm"
+            to={`../add-ev/${room.user_building_details_id}/${room.id}`}
+            showDefaultIcon
+            className="w-full"
+          >
+            Add Electric Vehicles
+          </CommonButton>
+        </div>
       </div>
       <Modal isOpen={isRoomEdit} onClose={() => setIsRoomEdit(false)}>
         <AddRoom room={room} onClose={() => setIsRoomEdit(false)} />

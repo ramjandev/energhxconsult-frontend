@@ -4,6 +4,8 @@ import CommonButton from "@/common/button/CommonButton";
 import CommonTabs from "@/common/button/CommonTabs";
 import SearchInput from "@/common/form/SearchInput";
 import SectionHeader from "@/common/header/SectionHeader";
+import EmptyState from "@/common/loading/EmptyState";
+import Spinner from "@/common/loading/Spinner";
 import useDebounce from "@/common/useDebounce";
 import AssociateCard, {
   Associate,
@@ -46,11 +48,11 @@ const AllAssignedAssociates: React.FC<AllAssignedAssociatesProps> = ({
 }) => {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-  const [filter, setFilter] = useState<AssociateType>("server");
+  const [filter, setFilter] = useState<AssociateType | null>(null);
 
   const { data, isLoading } = useGetAssociatesQuery({
-    ...(filter ? { type: filter } : {}),
-    ...(debouncedSearch ? { search: debouncedSearch } : {}),
+    type: filter || undefined,
+    search: debouncedSearch,
     page: 1,
     limit: 10,
   });
@@ -68,6 +70,7 @@ const AllAssignedAssociates: React.FC<AllAssignedAssociatesProps> = ({
 
   const handleSecondaryAction = async (id: string) => {
     try {
+      if (!filter) return;
       await selectAssociates({
         type: filter,
         associateId: id,
@@ -100,15 +103,15 @@ const AllAssignedAssociates: React.FC<AllAssignedAssociatesProps> = ({
       <CommonBorderWrapper isShadow>
         <CommonTabs
           tabs={CATEGORY_TABS}
-          activeTab={filter}
+          activeTab={filter as AssociateType}
           onChange={(value) => setFilter(value as AssociateType)}
           className="flex-wrap gap-2"
         />
       </CommonBorderWrapper>
 
-      {isLoading && <SectionHeader title="Loading associates..." />}
-
-      {!isLoading && (
+      {isLoading ? (
+        <Spinner text="Loading associates..." size="xl" />
+      ) : associates.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {associates.map((associate) => (
             <AssociateCard
@@ -120,6 +123,8 @@ const AllAssignedAssociates: React.FC<AllAssignedAssociatesProps> = ({
             />
           ))}
         </div>
+      ) : (
+        <EmptyState message="No associates assigned yet." />
       )}
 
       <AssociatesAbout />

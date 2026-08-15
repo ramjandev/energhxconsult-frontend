@@ -4,6 +4,8 @@ import CommonBorderWrapper from "@/common/button/CommonBorderWrapper";
 import CommonButton from "@/common/button/CommonButton";
 import CommonHeader from "@/common/header/CommonHeader";
 import SectionHeader from "@/common/header/SectionHeader";
+import EmptyState from "@/common/loading/EmptyState";
+import Spinner from "@/common/loading/Spinner";
 import {
   useDeleteEvMutation,
   useGetUserEVQuery,
@@ -15,6 +17,7 @@ import {
 } from "@/store/consumer/basic/ev/types/ev";
 import { Battery, Car, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import BMiniCard from "./card/BMiniCard";
 import Counter from "./Counter";
 
@@ -24,8 +27,6 @@ const RECOMMENDATIONS = [
   "Time-of-use electricity rates can reduce charging costs by 40%",
 ];
 
-// Maps a saved EvCharger record back into the AddVehiclePayload shape
-// the update endpoint expects, swapping in a new quantity.
 const toUpdatePayload = (v: EvCharger, noOfEvs: string): AddVehiclePayload => ({
   buildingId:
     v.user_building_details_id ?? "97bc8736-ccb0-464e-89cb-3fc5290d1d15",
@@ -54,6 +55,11 @@ const toUpdatePayload = (v: EvCharger, noOfEvs: string): AddVehiclePayload => ({
 });
 
 const EVManagement = () => {
+  const { buildingId, roomId } = useParams<{
+    buildingId: string;
+    roomId: string;
+  }>();
+
   const { data, isLoading } = useGetUserEVQuery();
   const [updateEv] = useUpdateEvMutation();
   const [deleteEv] = useDeleteEvMutation();
@@ -175,7 +181,10 @@ const EVManagement = () => {
               description="Manage electric vehicles for this building"
             />
           </div>
-          <CommonButton to="../add-ev-database" showDefaultIcon>
+          <CommonButton
+            to={`../add-ev-database/${buildingId}/${roomId}`}
+            showDefaultIcon
+          >
             Add More
           </CommonButton>
         </div>
@@ -196,9 +205,9 @@ const EVManagement = () => {
       <CommonBorderWrapper isShadow className="">
         <SectionHeader size="xl" title="Vehicle List" />
 
-        {isLoading && <SectionHeader title="Loading vehicles..." />}
-
-        {!isLoading && (
+        {isLoading ? (
+          <Spinner text={"Vehicle loading..."} size="lg" />
+        ) : vehicles.length > 0 ? (
           <div className="space-y-4">
             {vehicles.map((v) => (
               <div
@@ -260,6 +269,8 @@ const EVManagement = () => {
               </div>
             ))}
           </div>
+        ) : (
+          <EmptyState message="No vehicles found." />
         )}
       </CommonBorderWrapper>
 
@@ -293,13 +304,10 @@ const EVManagement = () => {
         <div className="flex flex-col sm:flex-row gap-3">
           <CommonButton
             variant="outline"
-            to="../add-ev-database"
+            to={`../add-ev-database/${buildingId}/${roomId}`}
             className="w-full"
           >
             Add More Vehicles
-          </CommonButton>
-          <CommonButton type="submit" className="w-full">
-            Save &amp; Continue
           </CommonButton>
         </div>
       </CommonBorderWrapper>

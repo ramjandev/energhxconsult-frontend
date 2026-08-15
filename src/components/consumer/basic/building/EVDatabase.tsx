@@ -4,6 +4,8 @@ import CommonButton from "@/common/button/CommonButton";
 import CommonTabs from "@/common/button/CommonTabs";
 import SearchInput from "@/common/form/SearchInput";
 import SectionHeader from "@/common/header/SectionHeader";
+import EmptyState from "@/common/loading/EmptyState";
+import { Spinner } from "@/common/loading/Spinner";
 import useDebounce from "@/common/useDebounce";
 import {
   useAddEvMutation,
@@ -14,14 +16,17 @@ import { useNavigate, useParams } from "react-router-dom"; // adjust to your rou
 import VehicleCard from "./card/VehicleCard";
 
 const EVDatabase = () => {
-  const { buildingId } = useParams<{ buildingId: string }>();
+  const { buildingId, roomId } = useParams<{
+    buildingId: string;
+    roomId: string;
+  }>();
 
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [filter, setFilter] = useState("all");
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  const { data, isLoading } = useGetEvDatabaseQuery({
+  const { data, isLoading, isFetching } = useGetEvDatabaseQuery({
     search: debouncedSearch,
     manufacturer: filter,
   });
@@ -42,7 +47,7 @@ const EVDatabase = () => {
   const [addVehicle, { isLoading: isAdding }] = useAddEvMutation();
   const navigate = useNavigate();
   const handleAdd = async () => {
-    // if (!buildingId) return;
+    if (!buildingId) return;
 
     const selected = vehicles.filter((v) => (quantities[v.vehicleId] ?? 0) > 0);
 
@@ -53,13 +58,13 @@ const EVDatabase = () => {
         selected.map((vehicle) =>
           addVehicle({
             ...vehicle.add_vehicle_payload,
-            buildingId: "97bc8736-ccb0-464e-89cb-3fc5290d1d15",
+            buildingId: buildingId,
             noOfEvs: String(quantities[vehicle.vehicleId]),
           }).unwrap(),
         ),
       );
       setQuantities({});
-      navigate(`../add-ev`);
+      navigate(`../add-ev/${buildingId}/${roomId}`);
     } catch (error) {
       console.error("Failed to add vehicles:", error);
     }
@@ -75,56 +80,60 @@ const EVDatabase = () => {
           description="Add electric vehicles to your building"
         />
 
-        <div className="relative">
-          <SearchInput
-            value={search}
-            onChange={setSearch}
-            placeholder="Search electric vehicles..."
-          />
-        </div>
-
-        <CommonTabs
-          tabs={BRAND_TABS}
-          activeTab={filter}
-          onChange={setFilter}
-          className="flex-wrap gap-2"
-        />
-
-        {isLoading && <SectionHeader title="Loading vehicles..." />}
-
-        {!isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {vehicles.map((v) => (
-              <VehicleCard
-                key={v.vehicleId}
-                emoji={v.icon}
-                name={v.title}
-                battery={v.battery_capacity_label}
-                range={v.vehicle_range_label}
-                charging={v.charging_level}
-                quantity={quantities[v.vehicleId] ?? 0}
-                onQuantityChange={(value) => setQty(v.vehicleId, value)}
-                min={0}
+        {isLoading ? (
+          <Spinner text={"Loading vehicles..."} size="lg" />
+        ) : vehicles.length > 0 ? (
+          <>
+            <div className="relative">
+              <SearchInput
+                value={search}
+                onChange={setSearch}
+                placeholder="Search electric vehicles..."
+                isFetching={isFetching}
               />
-            ))}
-          </div>
+            </div>
+            <CommonTabs
+              tabs={BRAND_TABS}
+              activeTab={filter}
+              onChange={setFilter}
+              className="flex-wrap gap-2"
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {vehicles.map((v) => (
+                <VehicleCard
+                  key={v.vehicleId}
+                  emoji={v.icon}
+                  name={v.title}
+                  battery={v.battery_capacity_label}
+                  range={v.vehicle_range_label}
+                  charging={v.charging_level}
+                  quantity={quantities[v.vehicleId] ?? 0}
+                  onQuantityChange={(value) => setQty(v.vehicleId, value)}
+                  min={0}
+                />
+              ))}
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <CommonButton
+                variant="outline"
+                to={`../custom-appliance/${buildingId}/${roomId}`}
+              >
+                Upload Custom Appliance
+              </CommonButton>
+
+              <CommonButton
+                disabled={totalAdded === 0}
+                isLoading={isAdding}
+                loadingText="Processing..."
+                onClick={handleAdd}
+              >
+                Save ({totalAdded} vehicles)
+              </CommonButton>
+            </div>
+          </>
+        ) : (
+          <EmptyState message="No electric vehicles found." />
         )}
-
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-1">
-          <CommonButton variant="outline" to="../custom-appliance">
-            Upload Custom Appliance
-          </CommonButton>
-
-          <CommonButton
-            disabled={totalAdded === 0}
-            isLoading={isAdding}
-            loadingText="Processing..."
-            onClick={handleAdd}
-          >
-            Save ({totalAdded} vehicles)
-          </CommonButton>
-        </div>
       </CommonBorderWrapper>
     </div>
   );

@@ -24,15 +24,19 @@ const BAnalysis = () => {
       label: building.building_name,
       value: building.user_building_details_id,
     })) ?? [];
-  const [startAudit, { isLoading: isAuditLoading, data: auditData }] =
-    useStartAuditMutation();
+
+  const [startAudit, { isLoading: isAuditLoading }] = useStartAuditMutation();
+
+  const [selectedReport, setSelectedReport] =
+    useState<EnergyAuditResponse | null>(null);
 
   const handleStart = async (data: {
     buildingId: string;
     auditType: AuditType;
   }) => {
     try {
-      await startAudit(data).unwrap();
+      const result = await startAudit(data).unwrap();
+      setSelectedReport(result);
       setHasStartedAudit(true);
       setIsModalOpen(false);
     } catch (err) {
@@ -40,8 +44,6 @@ const BAnalysis = () => {
     }
   };
 
-  const [selectedReport, setSelectedReport] =
-    useState<EnergyAuditResponse | null>(null);
   return (
     <div>
       {!hasStartedAudit && (

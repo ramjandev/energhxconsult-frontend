@@ -4,23 +4,30 @@ import CommonButton from "@/common/button/CommonButton";
 import CommonTabs from "@/common/button/CommonTabs";
 import SearchInput from "@/common/form/SearchInput";
 import SectionHeader from "@/common/header/SectionHeader";
+import EmptyState from "@/common/loading/EmptyState";
+import Spinner from "@/common/loading/Spinner";
+import useDebounce from "@/common/useDebounce";
 import {
   useAddApplianceMutation,
   useGetApplianceCategoryQuery,
 } from "@/store/consumer/basic/appliance/applianceApi";
 import { useState } from "react";
-import { useParams } from "react-router-dom"; // adjust to your router setup
+import { useParams } from "react-router-dom";
 import ApplianceCard from "./card/ApplianceCard";
 
 const ApplianceDatabase = () => {
-  const { roomId } = useParams<{ roomId: string }>();
+  const { buildingId, roomId } = useParams<{
+    buildingId: string;
+    roomId: string;
+  }>();
 
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const deBounceSearch = useDebounce(search, 500);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  const { data, isLoading } = useGetApplianceCategoryQuery(
-    { category: filter },
+  const { data, isLoading, isFetching } = useGetApplianceCategoryQuery(
+    { category: filter, search: deBounceSearch },
     { skip: !filter, refetchOnMountOrArgChange: true },
   );
 
@@ -40,8 +47,7 @@ const ApplianceDatabase = () => {
   const [addAppliance, { isLoading: isAdding }] = useAddApplianceMutation();
 
   const handleAdd = async () => {
-    // if (!roomId) return;
-
+    if (!roomId) return;
     const selected = appliances.filter(
       (a) => (quantities[a.applianceId] ?? 0) > 0,
     );
@@ -58,7 +64,7 @@ const ApplianceDatabase = () => {
             noOfAppliances: String(quantities[appliance.applianceId]),
             latentHeat: appliance.latentHeat,
             sensibleHeat: appliance.sensibleHeat,
-            roomId: "b3ba1108-89ce-428d-937f-a856a28bd129",
+            roomId,
           }).unwrap(),
         ),
       );
@@ -77,52 +83,57 @@ const ApplianceDatabase = () => {
           description="Search and add appliances to your room"
         />
 
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          placeholder="Search appliances..."
-        />
+        {isLoading ? (
+          <Spinner text={"Appliances loading..."} size="lg" />
+        ) : appliances.length > 0 ? (
+          <>
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder="Search appliances..."
+              isFetching={isFetching}
+            />
+            <CommonTabs
+              tabs={CATEGORY_TABS}
+              activeTab={filter}
+              onChange={setFilter}
+              className="flex-wrap gap-2"
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {appliances.map((a) => (
+                <ApplianceCard
+                  key={a.applianceId}
+                  emoji={a.image_url ?? ""}
+                  name={a.name}
+                  category={a.category.name}
+                  power={Number(a.powerRating)}
+                  quantity={quantities[a.applianceId] ?? 0}
+                  onQuantityChange={(value) => setQty(a.applianceId, value)}
+                  min={Number(a.min_consumption)}
+                />
+              ))}
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <CommonButton
+                variant="outline"
+                to={`../custom-appliance/${buildingId}/${roomId}`}
+              >
+                Upload Custom Appliance
+              </CommonButton>
 
-        <CommonTabs
-          tabs={CATEGORY_TABS}
-          activeTab={filter}
-          onChange={setFilter}
-          className="flex-wrap gap-2"
-        />
-
-        {isLoading && <SectionHeader title="Loading appliances..." />}
-
-        {!isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {appliances.map((a) => (
-              <ApplianceCard
-                key={a.applianceId}
-                emoji={a.image_url ?? ""}
-                name={a.name}
-                category={a.category.name}
-                power={Number(a.powerRating)}
-                quantity={quantities[a.applianceId] ?? 0}
-                onQuantityChange={(value) => setQty(a.applianceId, value)}
-                min={Number(a.min_consumption)}
-              />
-            ))}
-          </div>
+              <CommonButton
+                disabled={totalAdded === 0}
+                isLoading={isAdding}
+                loadingText="Processing..."
+                onClick={handleAdd}
+              >
+                Save ({totalAdded} appliances)
+              </CommonButton>
+            </div>
+          </>
+        ) : (
+          <EmptyState message="No appliances found." />
         )}
-
-        <div className="flex flex-col sm:flex-row gap-3 pt-1">
-          <CommonButton variant="outline" to="../custom-appliance">
-            Upload Custom Appliance
-          </CommonButton>
-
-          <CommonButton
-            disabled={totalAdded === 0}
-            isLoading={isAdding}
-            loadingText="Processing..."
-            onClick={handleAdd}
-          >
-            Save ({totalAdded} appliances)
-          </CommonButton>
-        </div>
       </CommonBorderWrapper>
     </div>
   );

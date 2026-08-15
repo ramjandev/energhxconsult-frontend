@@ -14,7 +14,7 @@ import StatBlock from "@/components/consumer/basic/renewable/StatBlock";
 import { useCalculateWindMutation } from "@/store/consumer/basic/renewables/renewableEnergyAPI";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import DashboardCardSkeleton from "@/common/loading/DashboardCardSkeleton";
@@ -46,13 +46,15 @@ const BWindEnergy = () => {
   });
 
   const [calculateWind, { data, isLoading }] = useCalculateWindMutation();
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
+  const [interested, setInterested] = useState<"yes" | "no" | null>(null);
 
-  useEffect(() => {
+  const handleAnalysisClick = async () => {
     const parsed = windFormSchema.safeParse(getValues());
     if (!parsed.success) return;
-    const payload = parsed.data;
-    calculateWind(payload);
-  }, []);
+    await calculateWind(parsed.data);
+    setHasAnalyzed(true);
+  };
 
   const onSubmit = (values: WindFormValues) => {
     if (!values) return;
@@ -61,7 +63,6 @@ const BWindEnergy = () => {
   const impact = data?.data.environmental_impact;
   const summary = data?.data.summary;
   const site = data?.data.wind_resource_assessment;
-  const [interested, setInterested] = useState<"yes" | "no" | null>(null);
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -310,10 +311,20 @@ const BWindEnergy = () => {
         </div>
       </CommonBorderWrapper>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-3">
+        {!hasAnalyzed && (
+          <CommonButton
+            onClick={handleAnalysisClick}
+            isLoading={isLoading}
+            loadingText="Analyzing..."
+          >
+            Analysis
+          </CommonButton>
+        )}
+
         <CommonButton
           type="submit"
-          disabled={!interested || isLoading}
+          disabled={!hasAnalyzed || isLoading || !interested}
           to="../biomass-energy"
         >
           Save with Next

@@ -9,7 +9,7 @@ import {
   biomassFormSchema,
   BiomassFormValues,
   defaultBiomassValues,
-} from "@/components/consumer/basic/renewable/schema/biomassFormSchema"; // adjust path to wherever you place the schema
+} from "@/components/consumer/basic/renewable/schema/biomassFormSchema";
 import SelectableOptionCard from "@/components/consumer/basic/renewable/SelectableOptionCard";
 import SolarPanelConfiguration from "@/components/consumer/basic/renewable/SolarPanelConfiguration";
 import SpecRow from "@/components/consumer/basic/renewable/SpecRow";
@@ -17,7 +17,7 @@ import StatBlock from "@/components/consumer/basic/renewable/StatBlock";
 import { useCalculateBiomassMutation } from "@/store/consumer/basic/renewables/renewableEnergyAPI";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import DashboardCardSkeleton from "@/common/loading/DashboardCardSkeleton";
@@ -53,13 +53,14 @@ const BBiomassEnergy = () => {
   const [calculateBiomass, { data, isLoading }] = useCalculateBiomassMutation();
   const [panelCapacity, setPanelCapacity] = useState("");
   const [interested, setInterested] = useState<"yes" | "no" | null>(null);
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
 
-  useEffect(() => {
+  const handleAnalysisClick = async () => {
     const parsed = biomassFormSchema.safeParse(getValues());
     if (!parsed.success) return;
-    const payload = parsed.data;
-    calculateBiomass(payload);
-  }, []);
+    await calculateBiomass(parsed.data);
+    setHasAnalyzed(true);
+  };
 
   const onSubmit = (values: BiomassFormValues) => {
     if (!interested) return;
@@ -329,10 +330,20 @@ const BBiomassEnergy = () => {
         </div>
       </CommonBorderWrapper>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-3">
+        {!hasAnalyzed && (
+          <CommonButton
+            onClick={handleAnalysisClick}
+            isLoading={isLoading}
+            loadingText="Analyzing..."
+          >
+            Analysis
+          </CommonButton>
+        )}
+
         <CommonButton
           type="submit"
-          disabled={!interested || isLoading}
+          disabled={!hasAnalyzed || isLoading || !interested}
           to="../analysis"
         >
           Save with Next

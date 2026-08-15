@@ -6,141 +6,93 @@ export interface CreateAuditPayload {
 }
 
 // audit reposonse
-// types/energyAuditTypes.ts
-
-// ---- Shared envelope (reuse from renewableEnergyTypes if you prefer a single source) ----
-
-export interface ApiEnvelope<T> {
-  status: number;
-  message: string;
-  data: T;
+interface EnergyMonthData {
+  month: string;
+  solarGenerationKwh: number;
+  usageKwh: number;
+  windGenerationKwh: number;
 }
 
-// ---- Audit type enum ----
-
-// ---- Hourly profile ----
-// Keys are hour-of-day as string "1".."24", values are load in watts (can be negative).
-
-export type HourlyProfile = Record<string, number>;
-
-// ---- Cooling load ----
-
-export type CoolingLoadCalculation = HourlyProfile;
-
-// ---- EV / Battery sizing ----
-// Empty array in sample payloads; shape unknown/unpopulated so far.
-
-export type EvBatterySizing = unknown[];
-
-// ---- Energy audit optimization ----
-
-export interface OptimalParameters {
-  IAC: number;
-  IACD: number;
-  SHGCB: number;
-  SHGCD: number;
-  "U-value-of-fenestration": number;
-  "U-value-of-roof": number;
-  "U-value-of-wall": number;
-  "air-conditioning-power-density": number;
-  "equipment-power-density": number;
-  "fenestration-to-wall-ratio": number;
-  "infiltration-rate": number;
-  "lighting-power-density": number;
-  "occupant-density": number;
-  "outdoor-air-temperature": number;
-  "outdoor-humidity-ratio": number;
-  "space-air-temperature": number;
-  "space-humidity-ratio": number;
+interface EnergyGenerationTotals {
+  peakMonth: string;
+  peakMonthKwh: number;
+  solarGenerationKwh: number;
+  usageKwh: number;
+  windGenerationKwh: number;
 }
 
-export interface RoomEnergyAudit {
-  "EUI total": number;
-  IAC: number;
-  IACD: number;
-  SHGCB: number;
-  SHGCD: number;
-  "U-value of fenestration": number;
-  "U-value of roof": number;
-  "U-value of wall": number;
-  "air-conditioning power density": number;
-  "equipment power density": number;
-  "fenestration-to-wall ratio": number;
-  "floor area": number;
-  "infiltration rate": number;
-  "lighting power density": number;
-  "occupant density": number;
-  "outdoor air temperature": number;
-  "outdoor humidity ratio": number;
-  "space air temperature": number;
-  "space humidity ratio": number;
+interface EnergyGenerationAndUsage {
+  data: EnergyMonthData[];
+  totals: EnergyGenerationTotals;
 }
 
-export interface RoomCoolingLoad {
-  "total cooling load profile": HourlyProfile;
+type EnergySource = "solar" | "wind" | "grid";
+
+interface EnergySourceDistributionItem {
+  energyKwh: number;
+  sharePct: number;
+  source: EnergySource;
 }
 
-export interface AuditRoom {
-  id: string;
+interface EnergySourceDistribution {
+  data: EnergySourceDistributionItem[];
+}
+
+interface Charts {
+  energyGenerationAndUsage: EnergyGenerationAndUsage;
+  energySourceDistribution: EnergySourceDistribution;
+}
+
+interface BuildingInsights {
+  efficiencyRating: string;
+  peakUsageTime: string;
+  totalAppliances: number;
+}
+
+interface Recommendation {
+  description: string;
+  key: string;
   title: string;
-  "cooling load": RoomCoolingLoad;
-  "energy audit": RoomEnergyAudit;
 }
 
-export interface EnergyAuditCharacterizationOptimization {
-  "Objective-Function-Value-(EUI)": number;
-  "Optimal-Parameters": OptimalParameters;
-  rooms: AuditRoom[];
+interface Summary {
+  annualSavings: number;
+  co2Avoided: number;
+  energyScore: number;
+  renewablePercent: number;
 }
 
-// ---- Assumptions ----
-
-export interface AuditAssumption {
-  room: string;
-  applied: string[];
+interface AuditReport {
+  buildingInsights: BuildingInsights;
+  charts: Charts;
+  recommendations: Recommendation[];
+  summary: Summary;
 }
 
-// ---- Substitutions ----
-
-export interface AuditSubstitution {
-  room: string;
-  substituted: string[];
-}
-
-// ---- Per-item audit result ----
-
-export interface AuditResultItem {
+interface AuditResultValueItem {
+  report: AuditReport;
   title: string;
-  idx: string;
-  substituted: boolean;
-  "Cooling Load Calculation": CoolingLoadCalculation;
-  "EV-Battery Sizing": EvBatterySizing;
-  "Energy Audit, Characterization, Optimization": EnergyAuditCharacterizationOptimization;
-  assumptions: AuditAssumption[];
-  substitutions: AuditSubstitution[];
 }
 
-// ---- Result wrapper ----
-
-export type AuditComputationStatus = "computed" | "pending" | "failed" | string;
-
-export interface AuditResultData {
-  computed_at: number; // unix timestamp (seconds, fractional)
-  value: AuditResultItem[];
+interface AuditResultData {
+  computed_at: number;
+  value: AuditResultValueItem[];
 }
 
-export interface AuditResult {
+type AuditStatus = "computed" | "pending" | "failed" | string;
+
+interface AuditResult {
   data: AuditResultData;
-  status: AuditComputationStatus;
+  status: AuditStatus;
 }
 
-// ---- Top-level payload (the "data" in the envelope) ----
-
-export interface EnergyAuditResult {
+interface AuditData {
   auditType: AuditType;
   result: AuditResult;
 }
 
-// ---- Full response envelope ----
-
-export type EnergyAuditResponse = ApiEnvelope<EnergyAuditResult>;
+export interface EnergyAuditResponse {
+  status: number;
+  message: string;
+  data: AuditData;
+}

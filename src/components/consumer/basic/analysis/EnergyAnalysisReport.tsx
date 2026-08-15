@@ -26,90 +26,85 @@ import BarTooltip from "../building/management/BarTooltip";
 import InsightStat from "./InsightStat";
 import RecommendationItem from "./RecommendationItem";
 
-const usageData = [
-  { month: "Jan", usage: 1200 },
-  { month: "Feb", usage: 1100 },
-  { month: "Mar", usage: 1000 },
-  { month: "Apr", usage: 950 },
-  { month: "May", usage: 1300 },
-  { month: "Jun", usage: 1520 },
-];
-
-const distributionData = [
-  { name: "Solar", value: 55, color: "#f59e0b" },
-  { name: "Wind", value: 25, color: "#3b82f6" },
-  { name: "Grid", value: 20, color: "#64748b" },
-];
-
-const recommendations = [
-  {
-    title: "Add Battery Storage",
-    description:
-      "Store excess solar energy for nighttime use. Est. additional savings: $800/year",
-  },
-  {
-    title: "Upgrade to LED Lighting",
-    description: "Replace remaining traditional bulbs. Est. savings: $150/year",
-  },
-  {
-    title: "Smart Thermostat",
-    description: "Optimize heating/cooling schedules. Est. savings: $200/year",
-  },
-];
-
-const analysisCards = [
-  {
-    icon: TrendingUp,
-    iconColorClassName: "text-[#16A34A]",
-    iconBgClassName: "bg-[#DCFCE7]",
-    label: "Energy Score",
-    value: "85/100",
-    des: "Excellent Performance",
-  },
-  {
-    icon: Leaf,
-    iconColorClassName: "text-[#16A34A]",
-    iconBgClassName: "bg-[#DCFCE7]",
-    label: "Renewable %",
-    value: "80%",
-    des: "Above Target",
-  },
-  {
-    icon: DollarSign,
-    iconColorClassName: "text-[#D08700]",
-    iconBgClassName: "bg-[#FEF3C7]",
-    label: "Annual Savings",
-    value: "$3,250",
-    valueClass: "text-[#00A63E]",
-    des: "vs. Grid Only",
-  },
-  {
-    icon: Leaf,
-    iconColorClassName: "text-[#16A34A]",
-    iconBgClassName: "bg-[#DCFCE7]",
-    label: "CO₂ Avoided",
-    value: "13.6",
-    des: "tons/year",
-  },
-];
+const SOURCE_COLOR_MAP: Record<string, string> = {
+  solar: "#f59e0b",
+  wind: "#3b82f6",
+  grid: "#64748b",
+};
 
 interface EnergyAnalysisReportProps {
   report?: EnergyAuditResponse | null;
 }
+
 const EnergyAnalysisReport: React.FC<EnergyAnalysisReportProps> = ({
   report,
 }) => {
   const [upgrade, { isLoading }] = useUpgradeMutation();
-
-  console.log("EnergyAnalysisReport report:", report); // Debugging line
-
   const navigate = useNavigate();
+
   const handleUpgrade = async () => {
     try {
       await upgrade({}).unwrap();
       navigate("/standard-consumer");
     } catch (error) {}
   };
+
+  const auditReport = report?.data?.result?.data?.value?.[0]?.report;
+
+  const summary = auditReport?.summary;
+  const buildingInsights = auditReport?.buildingInsights;
+  const charts = auditReport?.charts;
+  const recommendations = auditReport?.recommendations ?? [];
+
+  const usageData =
+    charts?.energyGenerationAndUsage?.data?.map((item) => ({
+      month: item.month,
+      usage: item.usageKwh,
+    })) ?? [];
+
+  const distributionData =
+    charts?.energySourceDistribution?.data?.map((item) => ({
+      name: item.source.charAt(0).toUpperCase() + item.source.slice(1),
+      value: item.sharePct,
+      color: SOURCE_COLOR_MAP[item.source] ?? "#94a3b8",
+    })) ?? [];
+
+  const analysisCards = [
+    {
+      icon: TrendingUp,
+      iconColorClassName: "text-[#16A34A]",
+      iconBgClassName: "bg-[#DCFCE7]",
+      label: "Energy Score",
+      value: summary ? `${summary.energyScore}/100` : "-",
+      des: "Excellent Performance",
+    },
+    {
+      icon: Leaf,
+      iconColorClassName: "text-[#16A34A]",
+      iconBgClassName: "bg-[#DCFCE7]",
+      label: "Renewable %",
+      value: summary ? `${summary.renewablePercent}%` : "-",
+      des: "Above Target",
+    },
+    {
+      icon: DollarSign,
+      iconColorClassName: "text-[#D08700]",
+      iconBgClassName: "bg-[#FEF3C7]",
+      label: "Annual Savings",
+      value: summary ? `$${summary.annualSavings.toLocaleString()}` : "-",
+      valueClass: "text-[#00A63E]",
+      des: "vs. Grid Only",
+    },
+    {
+      icon: Leaf,
+      iconColorClassName: "text-[#16A34A]",
+      iconBgClassName: "bg-[#DCFCE7]",
+      label: "CO₂ Avoided",
+      value: summary ? `${summary.co2Avoided}` : "-",
+      des: "tons/year",
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <HeaderBanner
@@ -200,7 +195,7 @@ const EnergyAnalysisReport: React.FC<EnergyAnalysisReportProps> = ({
           <div className="space-y-5">
             {recommendations.map((rec, index) => (
               <RecommendationItem
-                key={rec.title}
+                key={rec.key ?? rec.title}
                 index={index + 1}
                 title={rec.title}
                 description={rec.description}
@@ -214,11 +209,19 @@ const EnergyAnalysisReport: React.FC<EnergyAnalysisReportProps> = ({
       <CommonBorderWrapper isShadow>
         <SectionHeader size="xl" title="Building Insights" />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <InsightStat label="Total Appliances" value="41" />
-          <InsightStat label="Peak Usage Time" value="6-9 PM" />
+          <InsightStat
+            label="Total Appliances"
+            value={
+              buildingInsights ? `${buildingInsights.totalAppliances}` : "-"
+            }
+          />
+          <InsightStat
+            label="Peak Usage Time"
+            value={buildingInsights?.peakUsageTime ?? "-"}
+          />
           <InsightStat
             label="Efficiency Rating"
-            value="A+"
+            value={buildingInsights?.efficiencyRating ?? "-"}
             valueClass="text-green-600"
           />
         </div>
