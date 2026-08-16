@@ -92,8 +92,6 @@ const buildCreateBuildingPayload = (data: BuildingPayload) => ({
   })),
 });
 
-/* ---------- Single commodity row (own dependent-data fetching) ---------- */
-
 type CommodityRowProps = {
   index: number;
   control: Control<BuildingPayload>;
@@ -103,14 +101,14 @@ type CommodityRowProps = {
   commodityOptions: { label: string; value: string }[];
 };
 
-const CommodityRow = ({
+const CommodityRow: React.FC<CommodityRowProps> = ({
   index,
   control,
   register,
   errors,
   countryOptions,
   commodityOptions,
-}: CommodityRowProps) => {
+}) => {
   const commCountry = useWatch({
     control,
     name: `commodities.${index}.commCountry`,
@@ -280,8 +278,6 @@ const CommodityRow = ({
     </div>
   );
 };
-
-/* ---------------------------- Main component ---------------------------- */
 
 const CreateBuilding = () => {
   const {
