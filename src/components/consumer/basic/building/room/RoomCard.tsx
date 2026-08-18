@@ -48,7 +48,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
           <div className="  self-end">
             <CommonHeader size="sm">Estimated Usage</CommonHeader>
             <CommonHeader size="md" className="font-bold! text-[#112518]!">
-              {room.floor_area} m²
+              {room.estimated_usage} {room.estimated_usage_unit}
             </CommonHeader>
           </div>
           <div className="flex items-center gap-2 ">

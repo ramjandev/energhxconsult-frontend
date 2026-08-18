@@ -308,7 +308,7 @@ const BSolarEnergy = () => {
               <CommonBorderWrapper isShadow>
                 <SectionHeader
                   size="lg"
-                  title="Are you interested in biomass energy?"
+                  title="Are you interested in solar energy?"
                 />
                 <div className="flex flex-col sm:flex-row gap-4">
                   <SelectableOptionCard

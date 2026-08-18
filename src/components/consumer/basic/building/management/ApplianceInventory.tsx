@@ -3,177 +3,69 @@ import CommonButton from "@/common/button/CommonButton";
 import CommonTabs from "@/common/button/CommonTabs";
 import SearchInput from "@/common/form/SearchInput";
 import SectionHeader from "@/common/header/SectionHeader";
+import { BuildingApplianceReport } from "@/store/consumer/basic/appliance/types/appliance";
 import {
   Filter,
   Laptop,
   Lightbulb,
-  Microwave,
-  Refrigerator,
+  Plug,
   Snowflake,
   Tv,
   UtensilsCrossed,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import ManagementCard, { Appliance, Category } from "./ManagementCard";
+
 interface Room {
   id: string;
   name: string;
   subtitle: string;
   appliances: Appliance[];
 }
-const rooms: Room[] = [
-  {
-    id: "living-room",
-    name: "Living Room",
-    subtitle: "Living Room • 6 appliances",
-    appliances: [
-      {
-        id: "lr-tv",
-        name: 'TV 55"',
-        category: "Entertainment",
-        watts: 120,
-        qty: 1,
-        usageKwhDay: 0.96,
-        icon: Tv,
-      },
-      {
-        id: "lr-led",
-        name: "LED Bulb",
-        category: "Lighting",
-        watts: 10,
-        qty: 4,
-        usageKwhDay: 0.2,
-        icon: Lightbulb,
-      },
-      {
-        id: "lr-ac",
-        name: "Air Conditioner",
-        category: "Cooling",
-        watts: 3500,
-        qty: 1,
-        usageKwhDay: 8.4,
-        icon: Snowflake,
-      },
-    ],
-  },
-  {
-    id: "master-bedroom",
-    name: "Master Bedroom",
-    subtitle: "Bedroom • 4 appliances",
-    appliances: [
-      {
-        id: "mb-led",
-        name: "LED Bulb",
-        category: "Lighting",
-        watts: 10,
-        qty: 2,
-        usageKwhDay: 0.1,
-        icon: Lightbulb,
-      },
-      {
-        id: "mb-ac",
-        name: "Air Conditioner",
-        category: "Cooling",
-        watts: 3500,
-        qty: 1,
-        usageKwhDay: 8.4,
-        icon: Snowflake,
-      },
-      {
-        id: "mb-laptop",
-        name: "Laptop",
-        category: "Office",
-        watts: 65,
-        qty: 1,
-        usageKwhDay: 0.52,
-        icon: Laptop,
-      },
-    ],
-  },
-  {
-    id: "kitchen",
-    name: "Kitchen",
-    subtitle: "Kitchen • 5 appliances",
-    appliances: [
-      {
-        id: "k-fridge",
-        name: "Refrigerator",
-        category: "Kitchen",
-        watts: 150,
-        qty: 1,
-        usageKwhDay: 3.6,
-        icon: Refrigerator,
-      },
-      {
-        id: "k-microwave",
-        name: "Microwave",
-        category: "Kitchen",
-        watts: 1200,
-        qty: 1,
-        usageKwhDay: 1.2,
-        icon: Microwave,
-      },
-      {
-        id: "k-dishwasher",
-        name: "Dishwasher",
-        category: "Kitchen",
-        watts: 1800,
-        qty: 1,
-        usageKwhDay: 2.7,
-        icon: UtensilsCrossed,
-      },
-      {
-        id: "k-led",
-        name: "LED Bulb",
-        category: "Lighting",
-        watts: 10,
-        qty: 2,
-        usageKwhDay: 0.1,
-        icon: Lightbulb,
-      },
-    ],
-  },
-  {
-    id: "office",
-    name: "Office",
-    subtitle: "Office • 4 appliances",
-    appliances: [
-      {
-        id: "o-laptop",
-        name: "Laptop",
-        category: "Office",
-        watts: 65,
-        qty: 2,
-        usageKwhDay: 1.04,
-        icon: Laptop,
-      },
-      {
-        id: "o-led",
-        name: "LED Bulb",
-        category: "Lighting",
-        watts: 10,
-        qty: 2,
-        usageKwhDay: 0.1,
-        icon: Lightbulb,
-      },
-    ],
-  },
-];
 
-const filterOptions: Array<"All" | Category> = [
-  "All",
-  "Kitchen",
-  "Cooling",
-  "Laundry",
-  "Lighting",
-  "Entertainment",
-  "Office",
-];
+interface ApplianceInventoryProps {
+  report?: BuildingApplianceReport;
+  isLoading?: boolean;
+}
 
-const filterTabs = filterOptions.map((tab) => ({ label: tab, value: tab }));
-const ApplianceInventory = () => {
+// One representative icon per API category_key
+const CATEGORY_ICONS: Record<string, typeof Lightbulb> = {
+  lighting: Lightbulb,
+  cooling: Snowflake,
+  kitchen: UtensilsCrossed,
+  entertainment: Tv,
+  office: Laptop,
+};
+
+const ApplianceInventory = ({ report, isLoading }: ApplianceInventoryProps) => {
   const [activeFilter, setActiveFilter] = useState<"All" | Category>("All");
   const [search, setSearch] = useState("");
+
+  const rooms: Room[] = useMemo(() => {
+    return (report?.inventory ?? []).map((roomInv) => ({
+      id: roomInv.roomId,
+      name: roomInv.roomName,
+      subtitle: `${roomInv.roomName} • ${roomInv.totalAppliances} appliances`,
+      appliances: roomInv.appliances.map((a) => ({
+        id: a.id,
+        name: a.name,
+        category: a.category as Category,
+        watts: a.powerRating,
+        qty: a.quantity,
+        usageKwhDay: a.dailyUsageKwh,
+        icon: CATEGORY_ICONS[a.category_key] ?? Plug,
+      })),
+    }));
+  }, [report]);
+
+  const filterOptions: Array<"All" | Category> = useMemo(() => {
+    const categories = Array.from(
+      new Set(rooms.flatMap((room) => room.appliances.map((a) => a.category))),
+    ) as Category[];
+    return ["All", ...categories];
+  }, [rooms]);
+
+  const filterTabs = filterOptions.map((tab) => ({ label: tab, value: tab }));
 
   const filteredRooms = useMemo(() => {
     return rooms
@@ -189,7 +81,8 @@ const ApplianceInventory = () => {
         }),
       }))
       .filter((room) => room.appliances.length > 0);
-  }, [activeFilter, search]);
+  }, [activeFilter, search, rooms]);
+
   return (
     <CommonBorderWrapper isShadow className="">
       <div className=" flex flex-col sm:flex-row items-center justify-between">
@@ -221,7 +114,7 @@ const ApplianceInventory = () => {
       </div>
 
       <div className=" space-y-4">
-        {filteredRooms.length === 0 && (
+        {!isLoading && filteredRooms.length === 0 && (
           <p className="text-sm text-slate-400 py-6 text-center">
             No appliances match your search.
           </p>
@@ -236,10 +129,15 @@ const ApplianceInventory = () => {
                 <SectionHeader
                   size="xl"
                   title={room.name}
-                  description={`${room.name} • ${room.appliances.length} appliances`}
+                  description={room.subtitle}
                 />
               </div>
-              <CommonButton showDefaultIcon>Add Appliances</CommonButton>
+              <CommonButton
+                showDefaultIcon
+                to={`../add-appliance/${report?.buildingId}/${room.id}`}
+              >
+                Add Appliances
+              </CommonButton>
             </div>
             <div className="grid sm:grid-cols-2 gap-3">
               {room.appliances.map((a) => (

@@ -75,13 +75,6 @@ const BuildingCard: React.FC<BuildingCardProps> = ({ building }) => {
         ))}
       </div>
 
-      {building?.user_building_utility && (
-        <div className="bg-primary-green/5 border border-primary-green/20 text-[#112518] text-sm p-4 rounded-lg ">
-          {/* {building.info} */}
-          {building?.user_building_utility?.length} batteries installed
-        </div>
-      )}
-
       <div className="flex flex-col sm:flex-row justify-between gap-2">
         <div className="flex flex-wrap gap-2 ">
           <CommonButton
@@ -94,7 +87,7 @@ const BuildingCard: React.FC<BuildingCardProps> = ({ building }) => {
 
           <CommonButton
             variant="outline"
-            to="./manage-appliances"
+            to={`./manage-all-appliances/${building.user_building_details_id}`}
             className="w-full sm:w-auto"
           >
             Manage All Appliances

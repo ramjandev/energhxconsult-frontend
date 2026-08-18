@@ -1,15 +1,19 @@
 import CommonButton from "@/common/button/CommonButton";
 import SectionHeader from "@/common/header/SectionHeader";
+import EmailAuditReportModal from "@/components/consumer/basic/analysis/EmailAuditReportModal";
 import EnergyAnalysisReport from "@/components/consumer/basic/analysis/EnergyAnalysisReport";
 import StartEnergyAuditModal from "@/components/consumer/basic/analysis/StartEnergyAuditModal";
-import { useStartAuditMutation } from "@/store/consumer/basic/analysis/analysisApi";
+import {
+  useSendEnergyAuditReportMutation,
+  useStartAuditMutation,
+} from "@/store/consumer/basic/analysis/analysisApi";
 import {
   AuditType,
   EnergyAuditResponse,
 } from "@/store/consumer/basic/analysis/types/analysis";
 import { useGetAllBuildingsQuery } from "@/store/consumer/basic/building/buildingApi";
+import { Play, UploadCloud, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
-
 const BAnalysis = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasStartedAudit, setHasStartedAudit] = useState(false);
@@ -44,14 +48,54 @@ const BAnalysis = () => {
     }
   };
 
+  // send mail for audit report
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [sendReport, { isLoading: isLoadingReport }] =
+    useSendEnergyAuditReportMutation();
+
+  const handleSend = async ({ file, email }: { file: File; email: string }) => {
+    try {
+      await sendReport({ file, email }).unwrap();
+      setIsEmailModalOpen(false);
+      // toast success here
+    } catch (err) {
+      // toast error here
+    }
+  };
+
   return (
     <div>
       {!hasStartedAudit && (
-        <div className="flex items-center justify-between mb-6">
-          <SectionHeader title="Energy Analysis" />
-          <CommonButton onClick={() => setIsModalOpen(true)}>
-            Start Audit
-          </CommonButton>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#2DAD00]/10 flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5 text-[#2DAD00]" />
+            </div>
+            <div>
+              <SectionHeader title="Energy Analysis" />
+              <p className="text-sm text-muted-foreground">
+                Run audits and share reports for this building
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <CommonButton
+              onClick={() => setIsEmailModalOpen(true)}
+              variant="outline"
+              showDefaultIcon={false}
+            >
+              <UploadCloud className="w-4 h-4" />
+              Upload Report
+            </CommonButton>
+            <CommonButton
+              onClick={() => setIsModalOpen(true)}
+              showDefaultIcon={false}
+            >
+              <Play className="w-4 h-4" />
+              Start Audit
+            </CommonButton>
+          </div>
         </div>
       )}
 
@@ -61,6 +105,13 @@ const BAnalysis = () => {
         buildings={buildings}
         onStart={handleStart}
         isLoading={isAuditLoading}
+      />
+
+      <EmailAuditReportModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+        onSend={handleSend}
+        isLoading={isLoadingReport}
       />
 
       {hasStartedAudit && <EnergyAnalysisReport report={selectedReport} />}

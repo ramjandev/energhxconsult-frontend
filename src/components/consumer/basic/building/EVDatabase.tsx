@@ -89,7 +89,7 @@ const EVDatabase = () => {
                 value={search}
                 onChange={setSearch}
                 placeholder="Search electric vehicles..."
-                isFetching={isFetching}
+                isFetching={isFetching && !!debouncedSearch}
               />
             </div>
             <CommonTabs

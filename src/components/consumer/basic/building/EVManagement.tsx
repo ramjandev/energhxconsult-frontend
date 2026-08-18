@@ -60,23 +60,28 @@ const EVManagement = () => {
     roomId: string;
   }>();
 
+  console.log("EVManagement params:", { buildingId, roomId }); // add this
+
   const { data, isLoading } = useGetUserEVQuery();
   const [updateEv] = useUpdateEvMutation();
   const [deleteEv] = useDeleteEvMutation();
-
-  const vehicles = data?.data ?? [];
+  const EMPTY: EvCharger[] = [];
 
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
+  const vehicles = data?.data ?? EMPTY;
+
   useEffect(() => {
     setQuantities((prev) => {
+      let changed = false;
       const next = { ...prev };
       vehicles.forEach((v) => {
         if (next[v.id] === undefined) {
           next[v.id] = Number(v.no_of_ev) || 1;
+          changed = true;
         }
       });
-      return next;
+      return changed ? next : prev; // bail out if nothing actually changed
     });
   }, [vehicles]);
 
@@ -182,7 +187,7 @@ const EVManagement = () => {
             />
           </div>
           <CommonButton
-            to={`../add-ev-database/${buildingId}/${roomId}`}
+            to={`/basic-consumer/building/add-ev-database/${buildingId}/${roomId}`}
             showDefaultIcon
           >
             Add More
@@ -304,7 +309,7 @@ const EVManagement = () => {
         <div className="flex flex-col sm:flex-row gap-3">
           <CommonButton
             variant="outline"
-            to={`../add-ev-database/${buildingId}/${roomId}`}
+            to={`/basic-consumer/building/add-ev-database/${buildingId}/${roomId}`}
             className="w-full"
           >
             Add More Vehicles

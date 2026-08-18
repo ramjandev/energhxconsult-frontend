@@ -7,6 +7,7 @@ import SectionHeader from "@/common/header/SectionHeader";
 import EmptyState from "@/common/loading/EmptyState";
 import Spinner from "@/common/loading/Spinner";
 import useDebounce from "@/common/useDebounce";
+import Pagination from "@/dashboard/components/consumerDashboard/users/Pagination";
 import {
   useAddApplianceMutation,
   useGetApplianceCategoryQuery,
@@ -22,17 +23,19 @@ const ApplianceDatabase = () => {
   }>();
 
   const [filter, setFilter] = useState("all");
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const deBounceSearch = useDebounce(search, 500);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   const { data, isLoading, isFetching } = useGetApplianceCategoryQuery(
-    { category: filter, search: deBounceSearch },
+    { category: filter, search: deBounceSearch, page, limit: 10 },
     { skip: !filter, refetchOnMountOrArgChange: true },
   );
 
   const categories = data?.data?.categories ?? [];
   const appliances = data?.data?.appliances ?? [];
+  const totalPages = data?.data?.pagination?.totalPages ?? 1;
 
   const CATEGORY_TABS = categories.map((category) => ({
     label: category.name,
@@ -113,6 +116,15 @@ const ApplianceDatabase = () => {
                 />
               ))}
             </div>
+
+            <Pagination
+              currentPage={page}
+              onPageChange={setPage}
+              totalPages={totalPages}
+              showText="Appliances"
+              title=""
+            />
+
             <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <CommonButton
                 variant="outline"

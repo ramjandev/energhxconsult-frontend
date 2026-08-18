@@ -2,6 +2,7 @@ import CommonBorderWrapper from "@/common/button/CommonBorderWrapper";
 import CommonButton from "@/common/button/CommonButton";
 
 import SectionHeader from "@/common/header/SectionHeader";
+import { usePdfExport } from "@/common/htmlToPdf/usePdfExport";
 import { EnergyAuditResponse } from "@/store/consumer/basic/analysis/types/analysis";
 import { useUpgradeMutation } from "@/store/consumer/basic/building/buildingApi";
 import { DollarSign, Leaf, TrendingUp } from "lucide-react";
@@ -105,129 +106,140 @@ const EnergyAnalysisReport: React.FC<EnergyAnalysisReportProps> = ({
     },
   ];
 
+  const { targetRef, exportPdf, isExporting } = usePdfExport<HTMLDivElement>({
+    filename: `Report-${report?.data?.auditType.toLowerCase()}-${new Date()
+      .toISOString()
+      .slice(0, 10)}.pdf`,
+  });
   return (
     <div className="space-y-6">
       <HeaderBanner
         title="Energy Analysis Report"
         description="Comprehensive insights for your building's energy performance"
+        isButton
+        onClick={() => exportPdf()}
+        isLoading={isExporting || isLoading}
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        {analysisCards.map((card, index) => (
-          <BMiniCard
-            key={index}
-            className="border-[#E7E9E8]! bg-white! shadow-[0_1px_3px_0_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.10)]"
-            icon={card.icon}
-            iconColorClassName={card.iconColorClassName}
-            iconBgClassName={card.iconBgClassName}
-            label={card.label}
-            value={card.value}
-            valueClass={card.valueClass}
-            des={card.des}
-          />
-        ))}
-      </div>
 
-      <CommonBorderWrapper isShadow>
-        <SectionHeader size="xl" title="Energy Generation &amp; Usage" />
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={usageData}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="#e2e8f0"
-              />
-              <XAxis
-                dataKey="month"
-                tick={{ fontSize: 12, fill: "#64748b" }}
-                tickLine={false}
-                axisLine={{ stroke: "#e2e8f0" }}
-              />
-              <YAxis
-                tick={{ fontSize: 12, fill: "#64748b" }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <Tooltip content={<BarTooltip />} cursor={{ fill: "#f1f5f9" }} />
-              <Legend wrapperStyle={{ fontSize: 12, color: "#64748b" }} />
-              <Bar
-                dataKey="usage"
-                name="Usage"
-                fill="#3b82f6"
-                radius={[4, 4, 0, 0]}
-                barSize={40}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+      <div className="space-y-6" ref={targetRef}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {analysisCards.map((card, index) => (
+            <BMiniCard
+              key={index}
+              className="border-[#E7E9E8]! bg-white! shadow-[0_1px_3px_0_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.10)]"
+              icon={card.icon}
+              iconColorClassName={card.iconColorClassName}
+              iconBgClassName={card.iconBgClassName}
+              label={card.label}
+              value={card.value}
+              valueClass={card.valueClass}
+              des={card.des}
+            />
+          ))}
         </div>
-      </CommonBorderWrapper>
 
-      {/* Distribution + Recommendations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CommonBorderWrapper isShadow>
-          <SectionHeader size="xl" title="Energy Source Distribution" />
-
-          <div className="h-64">
+          <SectionHeader size="xl" title="Energy Generation &amp; Usage" />
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={distributionData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={90}
-                  label={({ name, value }) => `${name}: ${value}%`}
-                  labelLine={{ stroke: "#94a3b8" }}
-                >
-                  {distributionData.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
-              </PieChart>
+              <BarChart data={usageData}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#e2e8f0"
+                />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fontSize: 12, fill: "#64748b" }}
+                  tickLine={false}
+                  axisLine={{ stroke: "#e2e8f0" }}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: "#64748b" }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip
+                  content={<BarTooltip />}
+                  cursor={{ fill: "#f1f5f9" }}
+                />
+                <Legend wrapperStyle={{ fontSize: 12, color: "#64748b" }} />
+                <Bar
+                  dataKey="usage"
+                  name="Usage"
+                  fill="#3b82f6"
+                  radius={[4, 4, 0, 0]}
+                  barSize={40}
+                />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </CommonBorderWrapper>
 
-        <CommonBorderWrapper isShadow>
-          <SectionHeader size="xl" title="Recommendations" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <CommonBorderWrapper isShadow>
+            <SectionHeader size="xl" title="Energy Source Distribution" />
 
-          <div className="space-y-5">
-            {recommendations.map((rec, index) => (
-              <RecommendationItem
-                key={rec.key ?? rec.title}
-                index={index + 1}
-                title={rec.title}
-                description={rec.description}
-              />
-            ))}
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={distributionData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={90}
+                    label={({ name, value }) => `${name}: ${value}%`}
+                    labelLine={{ stroke: "#94a3b8" }}
+                  >
+                    {distributionData.map((entry) => (
+                      <Cell key={entry.name} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CommonBorderWrapper>
+
+          <CommonBorderWrapper isShadow>
+            <SectionHeader size="xl" title="Recommendations" />
+
+            <div className="space-y-5">
+              {recommendations.map((rec, index) => (
+                <RecommendationItem
+                  key={rec.key ?? rec.title}
+                  index={index + 1}
+                  title={rec.title}
+                  description={rec.description}
+                />
+              ))}
+            </div>
+          </CommonBorderWrapper>
+        </div>
+
+        <CommonBorderWrapper isShadow>
+          <SectionHeader size="xl" title="Building Insights" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <InsightStat
+              label="Total Appliances"
+              value={
+                buildingInsights ? `${buildingInsights.totalAppliances}` : "-"
+              }
+            />
+            <InsightStat
+              label="Peak Usage Time"
+              value={buildingInsights?.peakUsageTime ?? "-"}
+            />
+            <InsightStat
+              label="Efficiency Rating"
+              value={buildingInsights?.efficiencyRating ?? "-"}
+              valueClass="text-green-600"
+            />
           </div>
         </CommonBorderWrapper>
       </div>
 
-      {/* Building Insights */}
-      <CommonBorderWrapper isShadow>
-        <SectionHeader size="xl" title="Building Insights" />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <InsightStat
-            label="Total Appliances"
-            value={
-              buildingInsights ? `${buildingInsights.totalAppliances}` : "-"
-            }
-          />
-          <InsightStat
-            label="Peak Usage Time"
-            value={buildingInsights?.peakUsageTime ?? "-"}
-          />
-          <InsightStat
-            label="Efficiency Rating"
-            value={buildingInsights?.efficiencyRating ?? "-"}
-            valueClass="text-green-600"
-          />
-        </div>
-      </CommonBorderWrapper>
-
-      {/* Upgrade CTA */}
       <div className="rounded-2xl p-6 bg-primary/5 border border-primary/20 ">
         <SectionHeader
           size="md"

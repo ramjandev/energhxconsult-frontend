@@ -1,6 +1,6 @@
 import { type FC } from "react";
 import { FaLongArrowAltRight } from "react-icons/fa";
-import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 interface PaginationProps {
   title: string;

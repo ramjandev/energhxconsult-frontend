@@ -1,4 +1,3 @@
-import ActionButton from "@/common/button/ActionButton";
 import BackButton from "@/common/button/BackButton";
 import CommonBorderWrapper from "@/common/button/CommonBorderWrapper";
 import CommonButton from "@/common/button/CommonButton";
@@ -22,10 +21,7 @@ const BuildingDetails = () => {
 
   const buildingStart = [
     { label: "Total Rooms", value: buildingDetails?.rooms?.length },
-    {
-      label: "Appliances",
-      value: buildingDetails?.user_building_utility?.length,
-    },
+
     { label: "Electric Vehicles", value: buildingDetails?.evs?.length },
     {
       label: "Total Energy",
@@ -53,11 +49,9 @@ const BuildingDetails = () => {
                   {buildingDetails?.building_sub_type?.name}
                 </CommonHeader>
               </div>
-              <div>
-                <ActionButton type="edit" />
-              </div>
+              <div>{/* <ActionButton type="edit" /> */}</div>
             </div>
-            <div className="grid grid-col sm:grid-cols-2 md:grid-cols-4 gap-3 ">
+            <div className="grid grid-col sm:grid-cols-2 md:grid-cols-3 gap-3 ">
               {buildingStart.map((s) => (
                 <BMiniCard
                   key={s.label}

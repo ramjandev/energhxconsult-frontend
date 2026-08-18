@@ -220,6 +220,8 @@ export interface Room {
   lightBulbs: any[]; // Define specific type if needed
   Acs: any[]; // Define specific type if needed
   otherAppliances: any[]; // Define specific type if needed
+  estimated_usage: number;
+  estimated_usage_unit: string;
 }
 
 export interface BuildingData {
@@ -239,6 +241,7 @@ export interface BuildingData {
   rooms: Room[];
   roof: null;
   walls: any[];
+  building_estimated_usage: number;
 }
 
 export interface BuildingDetailsResponse {

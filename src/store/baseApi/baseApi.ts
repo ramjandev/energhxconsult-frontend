@@ -1,7 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { logout } from "../auth/auth.slice";
 import { RootState } from "../store";
 
 // Original baseQueryAPI
@@ -27,13 +25,6 @@ const baseQueryWithToasts: typeof baseQueryAPI = async (
   const method =
     typeof args === "object" && "method" in args ? args.method : "GET";
 
-  // Handle 401 errors globally
-  if (result?.error && result.error.status === 401) {
-    Cookies.remove("token");
-    api.dispatch(logout());
-    toast.error("Session expired. Please login again.");
-  }
-
   if (method !== "GET") {
     if (
       result?.data &&
@@ -43,19 +34,27 @@ const baseQueryWithToasts: typeof baseQueryAPI = async (
       const message = (result.data as { message?: string }).message;
       if (message && !extraOptions?.silent) {
         if (method === "DELETE") {
-          toast.warn(message);
+          toast.warning(message);
         } else {
           toast.success(message);
         }
       }
     }
 
-    // Error toast for non-GET methods (excluding 401 which is handled above)
-    if (result?.error && result.error.status !== 401) {
-      const message =
-        (result.error.data as { message?: string })?.message ||
-        "Something went wrong. Please try again.";
-      toast.error(message);
+    if (result?.error) {
+      const errorData = result.error.data as {
+        message?: string;
+        error?: string;
+      };
+      const isSessionExpired =
+        result.error.status === 401 && errorData?.error === "Unauthorized";
+
+      if (isSessionExpired) {
+      } else {
+        toast.error(
+          errorData?.message || "Something went wrong. Please try again.",
+        );
+      }
     }
   }
 

@@ -8,6 +8,7 @@ interface HeaderBannerProps {
   className?: string;
   onClick?: () => void;
   isButton?: boolean;
+  isLoading?: boolean;
 }
 const HeaderBanner: React.FC<HeaderBannerProps> = ({
   title,
@@ -15,6 +16,7 @@ const HeaderBanner: React.FC<HeaderBannerProps> = ({
   className,
   onClick,
   isButton = false,
+  isLoading = false,
 }) => {
   return (
     <div
@@ -29,7 +31,12 @@ const HeaderBanner: React.FC<HeaderBannerProps> = ({
         </CommonHeader>
       </div>
       {isButton && (
-        <CommonButton onClick={onClick} variant="outline" className="">
+        <CommonButton
+          disabled={isLoading}
+          onClick={onClick}
+          variant="outline"
+          className=""
+        >
           <Download className="w-4 h-4 mr-2" />
           Export Report
         </CommonButton>

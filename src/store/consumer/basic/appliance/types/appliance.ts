@@ -81,3 +81,117 @@ export interface ApplianceParams {
   page?: number;
   limit?: number;
 }
+
+// report appliance
+export interface ApplianceReportResponse {
+  status: number;
+  message: string;
+  data: BuildingApplianceReport;
+}
+
+export interface BuildingApplianceReport {
+  buildingId: string;
+  roomCount: number;
+  summary: Summary;
+  energyUsageByCategory: EnergyUsageByCategory[];
+  dailyEnergyUsageByRoom: DailyEnergyUsageByRoom[];
+  inventory: RoomInventory[];
+  insights: Insights;
+  renewableEnergyRecommendation: RenewableEnergyRecommendation;
+  rooms: Room[];
+}
+
+export interface Summary {
+  totalAppliances: number;
+  roomCount: number;
+  dailyUsageKwh: number;
+  monthlyUsageKwh: number;
+  monthlyCost: number;
+  tariffRate: number;
+  tariffRateSource: string;
+  currency: string;
+}
+
+export interface EnergyUsageByCategory {
+  category: string;
+  category_key: string;
+  monthlyUsageKwh: number;
+  dailyUsageKwh: number;
+  percentage: number;
+}
+
+export interface DailyEnergyUsageByRoom {
+  roomId: string;
+  roomName: string;
+  dailyUsageKwh: number;
+  monthlyUsageKwh: number;
+}
+
+export interface ApiAppliance {
+  id: string;
+  name: string;
+  category: string;
+  category_key: string;
+  powerRating: number;
+  powerRatingUnit: string;
+  quantity: number;
+  dailyUsageKwh: number;
+  monthlyUsageKwh: number;
+  source: string;
+}
+
+export interface HighConsumptionAppliance extends ApiAppliance {
+  roomId: string;
+  roomName: string;
+}
+
+export interface RoomInventory {
+  roomId: string;
+  roomName: string;
+  title: string;
+  totalAppliances: number;
+  dailyUsageKwh: number;
+  monthlyUsageKwh: number;
+  appliances: ApiAppliance[];
+}
+
+export interface OptimizationOpportunity {
+  title: string;
+  description: string;
+}
+
+export interface AnnualProjections {
+  annualConsumptionKwh: number;
+  annualCost: number;
+  potentialSavings: number;
+  potentialSavingsBasis: string;
+}
+
+export interface Insights {
+  highConsumptionAppliances: HighConsumptionAppliance[];
+  optimizationOpportunities: OptimizationOpportunity[];
+  annualProjections: AnnualProjections;
+}
+
+export interface RenewableEnergyAction {
+  label: string;
+  endpoint: string;
+}
+
+export interface RenewableEnergyRecommendation {
+  message: string;
+  recommendedSolarSystemKw: number;
+  actions: RenewableEnergyAction[];
+}
+
+export interface Room {
+  roomId: string;
+  title: string;
+  lightBulbCount: number;
+  acCount: number;
+  customApplianceCount: number;
+  totalAssignedAppliances: number;
+  appliances: unknown[];
+  lightBulbs: unknown[];
+  airConditioners: unknown[];
+}

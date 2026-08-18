@@ -50,7 +50,10 @@ const basicConsumerRoutes = {
           path: "add-ev-database/:buildingId/:roomId",
           element: <EVDatabase />,
         },
-        { path: "manage-appliances", element: <AppliancesManagement /> },
+        {
+          path: "manage-all-appliances/:buildingId",
+          element: <AppliancesManagement />,
+        },
       ],
     },
 

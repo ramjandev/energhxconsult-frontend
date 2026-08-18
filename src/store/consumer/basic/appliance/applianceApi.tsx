@@ -2,6 +2,7 @@ import { baseAPI } from "@/store/baseApi/baseApi";
 import {
   AddAppliancePayload,
   ApplianceParams,
+  ApplianceReportResponse,
   GetApplianceCategoryResponse,
 } from "./types/appliance";
 export const applianceApi = baseAPI.injectEndpoints({
@@ -41,6 +42,13 @@ export const applianceApi = baseAPI.injectEndpoints({
       }),
       providesTags: ["Appliance"],
     }),
+    getApplianceReport: build.query<ApplianceReportResponse, string>({
+      query: (building_id) => ({
+        url: `/buildings/${building_id}/appliance-report`,
+        method: "GET",
+      }),
+      providesTags: ["Appliance"],
+    }),
   }),
 });
 
@@ -49,4 +57,5 @@ export const {
   useUpdateApplianceMutation,
   useAddApplianceMutation,
   useAddCustomApplianceMutation,
+  useGetApplianceReportQuery,
 } = applianceApi;
